@@ -10,6 +10,8 @@ https://wa.me/<whatsapp de config.js>?text=<mensaje codificado con encodeURIComp
 
 Se abre navegando a ese enlace (no en ventana nueva). El mensaje conserva tildes, ñ, emojis y saltos de línea.
 
+**Enlace del botón de respaldo** ("Escribir por WhatsApp", cuando la hoja falla o el envío está bloqueado): el mismo formato, con el texto prellenado `Hola, quiero hacer un pedido.` definido en [textos-interfaz.md](textos-interfaz.md).
+
 ## Plantilla del mensaje
 
 Los asteriscos `*texto*` son negrita de WhatsApp. Las líneas opcionales solo aparecen cuando corresponde.
@@ -49,7 +51,7 @@ _El costo del delivery no está incluido; se coordina por WhatsApp._
 
 ## Condiciones para poder enviar
 
-El botón "Enviar pedido" solo actúa si **todas** se cumplen; si no, se muestra un aviso que dice qué falta:
+El botón "Enviar pedido" solo actúa si **todas** se cumplen; si no, se muestra un aviso que dice qué falta (redacción en [textos-interfaz.md](textos-interfaz.md)):
 
 1. El pedido tiene al menos un producto (escenario 3 de la Historia 2).
 2. Nombre completado.

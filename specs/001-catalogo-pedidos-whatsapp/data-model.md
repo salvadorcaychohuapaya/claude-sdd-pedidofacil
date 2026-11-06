@@ -31,7 +31,7 @@ Origen: pestaña "Productos" de la hoja, una fila por producto.
 |-------|------|-------|
 | `id` | Texto | Estable; si falta se genera desde el nombre; si se repite, se descarta la fila repetida. |
 | `nombre` | Texto | **Obligatorio**; si está vacío la fila no se muestra. |
-| `descripcion` | Texto | Opcional; corta. |
+| `descripcion` | Texto | Opcional. Se muestra en un máximo de 2 líneas; si es más larga se corta con "…". Sin "ver más" en la versión 1. |
 | `precioCentimos` | Entero > 0 | **Obligatorio**; texto no numérico, vacío, cero o negativo → la fila no se muestra. |
 | `categoria` | Texto | Opcional; si falta, se agrupa en "Otros". |
 | `foto` | URL | Opcional; si falta o falla, imagen genérica. |
@@ -74,7 +74,7 @@ Guardado en `localStorage` (`pedidofacil:pedido:v1`):
 | `cliente.nombre` | Obligatorio. |
 | `cliente.modalidad` | Obligatoria: `recojo` o `delivery`. |
 | `cliente.direccion`, `referencia` | Obligatorias solo si `modalidad = delivery`. |
-| `cliente.metodoPago` | Obligatorio; debe ser uno de los métodos válidos mostrados. |
+| `cliente.metodoPago` | Obligatorio; debe ser uno de los métodos válidos mostrados. Si tras actualizar la hoja el método elegido deja de ser válido, se limpia la selección, se muestra un aviso ([contracts/textos-interfaz.md](contracts/textos-interfaz.md)) y el cliente elige otro. |
 | `cliente.comentario` | Opcional. |
 | `enviado` | Pasa a `true` al tocar "Enviar pedido"; hace destacar "Empezar un pedido nuevo". No vacía el pedido. |
 
@@ -99,5 +99,6 @@ Se reemplaza solo cuando la descarga y la lectura de la hoja terminan bien.
 | Vigente | Descarga correcta en esta visita | Catálogo actual | Sí (si el pedido es válido) |
 | Copia guardada | Descarga falló, hay copia | Catálogo guardado + aviso "Mostrando datos guardados, pueden estar desactualizados" + botón de WhatsApp | **No** |
 | Sin datos | Descarga falló, no hay copia | Mensaje amable + botón de WhatsApp | No |
+| Sin productos | La hoja responde, pero no queda ningún producto válido | "Por ahora no hay productos disponibles" + botón de WhatsApp | No |
 
 Transiciones: *Cargando* → *Vigente* si la descarga funciona; → *Copia guardada* o *Sin datos* si falla. Al volver la conexión, "Reintentar" lleva a *Vigente*. Justo antes de enviar se vuelve a pedir la hoja; si falla, se pasa a *Copia guardada* y se bloquea el envío.

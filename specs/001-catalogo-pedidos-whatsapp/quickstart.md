@@ -4,6 +4,8 @@
 
 Esta guía sirve para comprobar que la funcionalidad cumple los escenarios de aceptación de la [spec](spec.md). No contiene código de la implementación.
 
+**Registro de resultados**: todos los resultados (prueba de concepto, cada historia y los criterios de éxito) se anotan en [checklists/verificacion.md](checklists/verificacion.md), el registro único de verificación. Los textos que debe mostrar la interfaz están en [contracts/textos-interfaz.md](contracts/textos-interfaz.md).
+
 ## Requisitos previos
 
 1. Una hoja de Google Sheets de prueba con las pestañas "Productos" y "Negocio" (columnas en [contracts/hoja-de-calculo.md](contracts/hoja-de-calculo.md)), cada una publicada en la web como CSV.
@@ -28,7 +30,7 @@ Son herramientas de desarrollo gratuitas y no forman parte del producto: el siti
 
 ## Prueba 0 – Verificación de lectura de la hoja (primera tarea)
 
-Abrir la página y comprobar en la consola del navegador que ambas pestañas se descargan y se leen sin error de acceso. Si falla, ver la sección 2 de [research.md](research.md) antes de continuar. Comprobar también que una foto compartida desde Drive carga en Chrome Android y Safari iOS.
+Abrir la página y comprobar en la consola del navegador que ambas pestañas se descargan y se leen sin error de acceso. Si falla, ver la sección 2 de [research.md](research.md) antes de continuar. Comprobar también que una foto compartida desde Drive carga en Chrome Android y Safari iOS. En las herramientas del navegador (pestaña de red), revisar el encabezado `access-control-allow-origin` de la respuesta de Google y anotarlo. Los resultados van en [checklists/verificacion.md](checklists/verificacion.md).
 
 ## Historia 1 – Ver el catálogo
 
@@ -38,7 +40,8 @@ Abrir la página y comprobar en la consola del navegador que ambas pestañas se 
 | 2 | Mirar el producto agotado | Aparece como agotado; no tiene botón para agregar. |
 | 3 | Tocar una categoría y luego "Todos" | Primero solo esa categoría; luego todos. |
 | 4 | Mirar la parte superior | Nombre y logo del negocio. |
-| 5 | Cortar la conexión y recargar (con copia previa) | Datos guardados con aviso "Mostrando datos guardados, pueden estar desactualizados"; sin envío; botón de WhatsApp visible. |
+| 5 | Abrir el enlace en un navegador sin iniciar sesión en Google ni instalar nada (RF-011) | El catálogo se ve y se puede usar sin cuenta ni instalación. |
+| 6 | Dejar todas las filas de "Productos" inválidas (por ejemplo, sin precio) y recargar | Se muestra "Por ahora no hay productos disponibles" con el botón para escribir directo al WhatsApp del negocio. |
 
 ## Historia 2 – Armar y enviar el pedido
 
@@ -51,9 +54,10 @@ Abrir la página y comprobar en la consola del navegador que ambas pestañas se 
 | 5 | Elegir "Delivery" y mirar el total | Indica que el delivery se coordina por WhatsApp y no está incluido. |
 | 6 | Volver a la página tras enviar | El pedido sigue ahí; "Empezar un pedido nuevo" aparece destacado. |
 | 7 | Tocar "Empezar un pedido nuevo" y confirmar | El pedido queda vacío. |
-| 8 | Marcar un producto del pedido como agotado en la hoja, esperar el refresco y tocar "Enviar pedido" | Se quita con aviso, el total se recalcula, no se abre WhatsApp hasta tocar de nuevo. |
+| 8 | Marcar un producto del pedido como agotado en la hoja, esperar el refresco y tocar "Enviar pedido" | Se quita con aviso, el total se recalcula, no se abre WhatsApp hasta tocar de nuevo. Repetir cambiando también el precio de otro producto del pedido: aparece el aviso de cambio de precio y también hay que tocar "Enviar pedido" otra vez. |
 | 9 | Cerrar la página con un pedido a medias y reabrirla | El pedido se conserva. |
 | 10 | Cantidades | Solo enteros entre 1 y 99. |
+| 11 | Elegir un método de pago, quitarlo de los aceptados en la hoja (o dejar vacío el titular de Yape) y esperar el refresco | Se limpia la selección, aparece el aviso "El método de pago que elegiste ya no está disponible. Elige otro." y se puede elegir otro. |
 
 **Control de sumas (CE-006)**: con precios como `0.10`, `0.20`, `19.99` y `12,50` y cantidades variadas, comprobar a mano que el total del mensaje es la suma exacta de los subtotales.
 
@@ -61,12 +65,14 @@ Abrir la página y comprobar en la consola del navegador que ambas pestañas se 
 
 | # | Paso | Resultado esperado |
 |---|------|--------------------|
-| 1 | Cambiar un precio en la hoja y recargar el catálogo | El precio nuevo aparece en un máximo de 5 minutos. |
+| 1 | Cambiar un precio en la hoja y recargar el catálogo | El precio nuevo aparece en un máximo de 5 minutos. Si la medición supera 5 minutos, se ajusta la spec al valor medido y se informa en la guía del dueño. |
 | 2 | Agregar una fila con producto nuevo | Aparece en su categoría. |
 | 3 | Dejar vacío el nombre o el precio de una fila | Esa fila no se muestra; el resto funciona. |
 | 4 | Poner una foto inexistente | Se ve la imagen genérica. |
-| 5 | Despublicar o romper el enlace CSV (sin copia previa) | Mensaje amable con botón para escribir al WhatsApp del negocio. |
+| 5 | Despublicar o romper el enlace CSV (sin copia previa) | Mensaje amable con botón para escribir al WhatsApp del negocio; al tocarlo se abre el chat con el mensaje "Hola, quiero hacer un pedido." ya escrito. |
 | 6 | Cronometrar a una persona que no programa cambiando un precio con la guía | Menos de 1 minuto (CE-004). |
+| 7 | Cortar la conexión y recargar (con copia previa) | Datos guardados con aviso "Mostrando datos guardados, pueden estar desactualizados"; sin envío; botón de WhatsApp visible. |
+| 8 | Cargar el catálogo con conexión, armar un pedido válido, cortar la conexión y tocar "Enviar pedido" | El envío queda bloqueado con el aviso "No podemos confirmar los precios en este momento…" y el botón de WhatsApp visible; WhatsApp no se abre (RF-013). |
 
 ## Historia 4 – Métodos de pago
 
@@ -82,7 +88,7 @@ Abrir la página y comprobar en la consola del navegador que ambas pestañas se 
 | Criterio | Cómo se comprueba |
 |----------|-------------------|
 | CE-001 (pedido de 3 productos en < 2 min) | Cronometrar a una persona nueva. |
-| CE-002 (360 px o más) | Emulación a 360 px: sin desplazamiento horizontal; botones táctiles cómodos. |
+| CE-002 (360 px o más) | Emulación a 360 px: sin desplazamiento horizontal en ninguna pantalla y todos los elementos que se tocan miden al menos 44×44 px. |
 | CE-003 (productos en < 3 s con 4G) | Limitación de red "4G" del navegador, con caché vacía. |
 | CE-005 (S/ 0) | Revisar que no hay servicios con cobro. |
 | CE-006 (0 errores de suma) | Control de sumas de la historia 2. |

@@ -14,7 +14,7 @@ Una fila por producto. Cada presentación (1/4 pollo, 1/2 pollo; vaso chico, vas
 |---------|:-----------:|---------|-------|
 | `id` | No | `pollo-1-4` | Identificador estable. No cambiarlo si el producto ya existe. |
 | `nombre` | **Sí** | `1/4 de pollo a la brasa` | Vacío → la fila no se muestra. |
-| `descripcion` | No | `Con papas y ensalada` | Corta. |
+| `descripcion` | No | `Con papas y ensalada` | Corta: se muestra en un máximo de 2 líneas y, si es más larga, se corta con "…". |
 | `precio` | **Sí** | `18.50` o `18,50` | En soles, sin el símbolo S/. Vacío, cero o texto → la fila no se muestra. |
 | `categoria` | No | `Pollos` | Sin categoría → "Otros". |
 | `foto` | No | enlace de Drive o `https://...` | Vacío o roto → imagen genérica. |
@@ -51,4 +51,4 @@ El **número de WhatsApp del negocio no va en la hoja**: está en `config.js` (d
 
 ## Frescura
 
-El dueño edita la hoja y el cambio debe verse en el catálogo en **un máximo de 5 minutos** (Historia 3). El retraso depende de la publicación de Google; ver [research.md](../research.md), sección 2.
+El dueño edita la hoja y el cambio debe verse en el catálogo en **un máximo de 5 minutos** (Historia 3). El retraso depende de la publicación de Google; ver [research.md](../research.md), sección 2. Si la medición real supera 5 minutos, se ajusta la especificación al valor medido y se informa en la guía del dueño (sin agregar servidor).

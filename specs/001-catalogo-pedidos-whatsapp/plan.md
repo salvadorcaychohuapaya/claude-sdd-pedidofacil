@@ -24,7 +24,7 @@ Enfoque técnico (de `docs/decisiones-tecnicas.md`): HTML, CSS y JavaScript puro
 
 **Tipo de proyecto**: sitio web estático de una sola página (solo frontend).
 
-**Metas de rendimiento**: primera carga con productos visibles en menos de 3 s con 4G (CE-003). Presupuesto: HTML + CSS + JS ≤ 60 KB sin comprimir; fotos pedidas a ancho reducido (≈ 400 px) y con carga diferida.
+**Metas de rendimiento**: primera carga con productos visibles en menos de 3 s con 4G (CE-003). Presupuesto: HTML + CSS + JS ≤ 60 KB sin comprimir; fotos pedidas a ancho reducido (≈ 400 px) y con carga diferida. Medida de CE-002: sin desplazamiento horizontal a 360 px y áreas táctiles de al menos 44×44 px.
 
 **Restricciones**: costo S/ 0 (CE-005); sin datos de clientes en servidores; funcionar con conexión lenta o sin conexión (modo copia guardada, RF-013); todo en español de Perú; sin dependencias de funciones exclusivas de GitHub, para poder mudar el sitio a otro hosting estático gratuito.
 
@@ -48,11 +48,11 @@ No hay violaciones; no se completa la tabla de seguimiento de complejidad.
 
 ## Orden de entrega por historias
 
-Cada historia se implementa y se prueba en vista de celular antes de pasar a la siguiente (principio VII):
+Cada historia se implementa y se prueba en vista de celular antes de pasar a la siguiente (principio VII). El resultado de cada verificación, incluida una revisión breve de los principios I–VII, se registra en [checklists/verificacion.md](checklists/verificacion.md):
 
 0. **Prueba de concepto (antes de todo)**. Con una hoja real de Google Sheets se verifica que el navegador puede leer el CSV publicado y que las fotos de Drive se muestran (riesgo principal, ver [research.md](research.md)). Si falla, se detiene el trabajo y se decide la alternativa.
 1. **Historia 1 – Ver el catálogo (P1)**. Incluye la lectura de la hoja (pestañas "Productos" y "Negocio") con la validación de filas (nombre y precio obligatorios), el filtro por categoría, los agotados y la imagen genérica.
-2. **Historia 2 – Armar y enviar el pedido (P1)**. Pedido, cantidades, totales en céntimos, formulario con un selector básico de pago, persistencia, botón "Empezar un pedido nuevo", revisión de productos antes de enviar y mensaje de WhatsApp.
+2. **Historia 2 – Armar y enviar el pedido (P1)**. Pedido, cantidades, totales en céntimos, formulario con un selector básico de pago, persistencia, botón "Empezar un pedido nuevo", revisión de productos antes de enviar (con aviso y segundo toque en "Enviar pedido" si cambió algo) y mensaje de WhatsApp.
 3. **Historia 3 – El dueño actualiza sin programar (P1)**. Refresco máximo de 5 minutos, copia guardada y modo sin conexión (RF-013), tolerancia a datos incompletos y guía corta para el dueño.
 4. **Historia 4 – Métodos de pago (P2)**. Lista de métodos válidos según los datos de la hoja, datos de Yape/Plin, opción "A coordinar por WhatsApp" y línea de pago en el mensaje.
 
@@ -70,15 +70,18 @@ specs/001-catalogo-pedidos-whatsapp/
 ├── contracts/           # Fase 1
 │   ├── hoja-de-calculo.md
 │   ├── config.md
-│   └── mensaje-whatsapp.md
+│   ├── mensaje-whatsapp.md
+│   └── textos-interfaz.md
 ├── checklists/
-│   └── requirements.md
+│   ├── requirements.md
+│   └── verificacion.md   # Registro único de resultados de verificación
 └── tasks.md             # Fase 2 (lo crea /speckit-tasks, no este comando)
 ```
 
 ### Código fuente (raíz del repositorio)
 
 ```text
+README.md                # Qué es PedidoFácil, cómo probarlo en local y publicarlo (T053)
 index.html               # Única página: encabezado, catálogo, pedido, formulario
 config.js                # Número de WhatsApp (con 51) y enlaces CSV de la hoja
 css/
@@ -96,6 +99,7 @@ img/
 └── generica.svg         # Imagen genérica para fotos que no cargan
 docs/
 └── guia-del-dueno.md    # Cómo editar la hoja (entregable de la historia 3)
+poc/                     # TEMPORAL: prueba de concepto (poc.html); se elimina en T052
 ```
 
 **Decisión de estructura**: sitio estático sin carpetas `src/` ni `tests/`; todas las rutas del HTML son relativas, para que el sitio funcione bajo `https://usuario.github.io/repositorio/` y en cualquier otro hosting estático. Las pruebas son manuales y están descritas en [quickstart.md](quickstart.md).
