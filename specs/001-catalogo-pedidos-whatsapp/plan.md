@@ -50,10 +50,11 @@ No hay violaciones; no se completa la tabla de seguimiento de complejidad.
 
 Cada historia se implementa y se prueba en vista de celular antes de pasar a la siguiente (principio VII):
 
-1. **Historia 1 – Ver el catálogo (P1)**. Incluye la lectura mínima de la hoja (pestañas "Productos" y "Negocio"), el filtro por categoría, los agotados y la imagen genérica. Antes de seguir se verifica con la hoja real que el navegador puede leer el CSV (riesgo principal, ver [research.md](research.md)).
-2. **Historia 2 – Armar y enviar el pedido (P1)**. Pedido, cantidades, totales en céntimos, formulario, persistencia, botón "Empezar un pedido nuevo", revisión de productos antes de enviar y mensaje de WhatsApp.
-3. **Historia 3 – El dueño actualiza sin programar (P1)**. Validación de filas (celdas obligatorias vacías), refresco máximo de 5 minutos, copia guardada y modo sin conexión (RF-013); guía corta para el dueño.
-4. **Historia 4 – Métodos de pago (P2)**. Lista de métodos válidos, datos de Yape/Plin, opción "A coordinar por WhatsApp".
+0. **Prueba de concepto (antes de todo)**. Con una hoja real de Google Sheets se verifica que el navegador puede leer el CSV publicado y que las fotos de Drive se muestran (riesgo principal, ver [research.md](research.md)). Si falla, se detiene el trabajo y se decide la alternativa.
+1. **Historia 1 – Ver el catálogo (P1)**. Incluye la lectura de la hoja (pestañas "Productos" y "Negocio") con la validación de filas (nombre y precio obligatorios), el filtro por categoría, los agotados y la imagen genérica.
+2. **Historia 2 – Armar y enviar el pedido (P1)**. Pedido, cantidades, totales en céntimos, formulario con un selector básico de pago, persistencia, botón "Empezar un pedido nuevo", revisión de productos antes de enviar y mensaje de WhatsApp.
+3. **Historia 3 – El dueño actualiza sin programar (P1)**. Refresco máximo de 5 minutos, copia guardada y modo sin conexión (RF-013), tolerancia a datos incompletos y guía corta para el dueño.
+4. **Historia 4 – Métodos de pago (P2)**. Lista de métodos válidos según los datos de la hoja, datos de Yape/Plin, opción "A coordinar por WhatsApp" y línea de pago en el mensaje.
 
 ## Estructura del proyecto
 
