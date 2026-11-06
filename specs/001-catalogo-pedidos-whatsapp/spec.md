@@ -19,6 +19,16 @@ La versión 1 es el producto mínimo útil: ver el catálogo, armar el pedido, e
 - **Cliente final**: persona que compra desde su celular, a menudo con datos móviles limitados.
 - **Dueño del negocio**: persona con poca experiencia técnica que actualiza productos y precios.
 
+## Aclaraciones
+
+### Sesión 2026-11-06
+
+- Q: ¿Dónde edita el dueño los datos del negocio (nombre, logo, número de WhatsApp, métodos de pago y datos de Yape/Plin)? → A: El nombre, el logo, los métodos de pago y los datos de Yape/Plin se editan en la hoja de cálculo. El número de WhatsApp queda fijo en la configuración inicial, porque el botón de respaldo (hoja inaccesible) lo necesita y un error al escribirlo en la hoja haría perder todos los pedidos; cambiarlo es poco frecuente y lo hace quien instala el catálogo. **Excepción al principio IV de la constitución ("El dueño no programa")**: se justifica porque el número es el único dato que el botón de respaldo necesita cuando la hoja falla, y un error de escritura en la hoja haría perder todos los pedidos. La constitución no se enmienda.
+- Q: Cuando el cliente envía su pedido y WhatsApp se abre, ¿qué pasa con el pedido guardado en su celular? → A: Se conserva (el sistema no puede saber si el mensaje se llegó a enviar). El cliente dispone de un botón "Empezar un pedido nuevo" que vacía el pedido con confirmación; tras tocar "Enviar pedido", ese botón se muestra de forma destacada para evitar reenvíos por error.
+- Q: ¿Qué ve el cliente si un producto de su pedido guardado se marca como agotado o desaparece de la hoja antes de enviar? → A: Se quita del pedido y se muestra un aviso claro indicando qué producto se quitó y por qué; el total se recalcula. La revisión se hace al abrir el catálogo y justo antes de enviar, con los datos vigentes de la hoja.
+- Q: ¿Cómo ve el catálogo un cliente sin conexión, o cuando la hoja tarda en responder, si ya lo había abierto antes en ese celular? → A: Se muestra la última versión vista con el aviso "Mostrando datos guardados, pueden estar desactualizados". No se puede enviar el pedido hasta recuperar la conexión y revisar los datos vigentes. Mientras tanto, se mantiene visible el botón para escribir directo al WhatsApp del negocio.
+- Q: ¿Qué métodos de pago aparecen si el dueño no marca ninguno como aceptado, o si marca Yape o Plin pero deja vacío el número o el titular? → A: Si Yape o Plin tienen número o titular vacío, ese método no se muestra. Si no queda ningún método válido, se ofrece únicamente la opción "A coordinar por WhatsApp" (no "Efectivo", porque no todos los negocios aceptan efectivo).
+
 ## Escenarios de usuario y pruebas *(obligatorio)*
 
 ### Historia de usuario 1 - Ver el catálogo (Prioridad: P1)
@@ -35,6 +45,7 @@ Como cliente, quiero ver los productos con foto, nombre, precio y categoría, pa
 2. **Dado** que un producto está marcado como "agotado", **cuando** veo el catálogo, **entonces** aparece como agotado y no se puede agregar al pedido.
 3. **Dado** que hay varias categorías, **cuando** toco una categoría, **entonces** solo veo los productos de esa categoría; y puedo volver a ver todos.
 4. **Dado** que abro el catálogo, **cuando** carga, **entonces** veo arriba el nombre y el logo del negocio.
+5. **Dado** que ya abrí el catálogo antes en este celular y ahora no hay conexión o la hoja no responde, **cuando** abro el enlace, **entonces** veo la última versión guardada con el aviso "Mostrando datos guardados, pueden estar desactualizados", no puedo enviar el pedido y sigo viendo el botón para escribir directo al WhatsApp del negocio.
 
 ---
 
@@ -53,6 +64,9 @@ Como cliente, quiero agregar productos con cantidades y enviar el pedido al What
 3. **Dado** que el pedido está vacío, **cuando** intento enviarlo, **entonces** no se puede enviar y veo un aviso.
 4. **Dado** que elegí "delivery", **cuando** no escribo la dirección, **entonces** no puedo enviar el pedido hasta completarla.
 5. **Dado** que elegí "delivery", **cuando** veo el total, **entonces** se indica que el costo del delivery se coordina por WhatsApp y no está incluido en el total.
+6. **Dado** que toqué "Enviar pedido", **cuando** regreso a la página, **entonces** mi pedido sigue ahí y el botón "Empezar un pedido nuevo" se muestra de forma destacada.
+7. **Dado** que toco "Empezar un pedido nuevo", **cuando** confirmo, **entonces** el pedido queda vacío.
+8. **Dado** que un producto de mi pedido se agotó o ya no está en la hoja, **cuando** abro el catálogo o toco "Enviar pedido", **entonces** el producto se quita del pedido, veo un aviso con el nombre del producto y el motivo, y el total se recalcula antes de enviar.
 
 ---
 
@@ -84,6 +98,8 @@ Como cliente, quiero saber cómo puedo pagar (Yape, Plin, efectivo o transferenc
 
 1. **Dado** que armo mi pedido, **cuando** elijo el método de pago, **entonces** solo veo los métodos que acepta el negocio.
 2. **Dado** que elijo Yape o Plin, **cuando** lo selecciono, **entonces** veo el número y el nombre del titular, y una indicación de enviar la captura del pago por WhatsApp.
+3. **Dado** que Yape o Plin está marcado como aceptado pero su número o titular está vacío en la hoja, **cuando** elijo el método de pago, **entonces** ese método no aparece.
+4. **Dado** que el negocio no tiene ningún método de pago válido, **cuando** elijo el método de pago, **entonces** solo veo la opción "A coordinar por WhatsApp".
 
 ---
 
@@ -91,10 +107,12 @@ Como cliente, quiero saber cómo puedo pagar (Yape, Plin, efectivo o transferenc
 
 - El cliente cierra la página antes de enviar: el pedido se conserva al volver, en el mismo celular.
 - Si los precios cambian mientras el cliente arma su pedido, al enviar se usan los precios vigentes.
+- Si un producto del pedido se agota o desaparece de la hoja, se quita del pedido con un aviso al abrir el catálogo y justo antes de enviar.
 - Foto que no carga o que no existe: se muestra una imagen genérica.
-- Hoja de productos inaccesible: se muestra un mensaje amable con un botón para escribir directo al WhatsApp del negocio.
+- Hoja de productos inaccesible y sin versión guardada en el celular: se muestra un mensaje amable con un botón para escribir directo al WhatsApp del negocio.
+- Hoja inaccesible o sin conexión, pero con una versión guardada en ese celular: se muestra esa versión con un aviso de datos posiblemente desactualizados, el envío del pedido queda bloqueado y el botón de WhatsApp sigue visible.
 - Nombres con tildes, ñ y emojis deben verse bien en el catálogo y en el mensaje de WhatsApp.
-- El número de WhatsApp del negocio se registra con código de país (51).
+- El número de WhatsApp del negocio se registra con código de país (51) en la configuración inicial, no en la hoja; así el botón de respaldo funciona aunque la hoja falle. Cambiarlo es poco frecuente y lo hace quien instala el catálogo.
 - Cantidades: solo números enteros entre 1 y 99.
 - Productos con tamaños o presentaciones (por ejemplo, 1/4 o 1/2 pollo; vaso chico o grande): cada presentación se registra como un producto aparte, con su propio precio.
 
@@ -106,18 +124,19 @@ Como cliente, quiero saber cómo puedo pagar (Yape, Plin, efectivo o transferenc
 - **RF-002**: El sistema DEBE mostrar los productos activos con foto, nombre, descripción corta, precio (formato `S/ 0.00`) y categoría.
 - **RF-003**: El cliente DEBE poder filtrar los productos por categoría.
 - **RF-004**: El sistema DEBE mostrar los productos agotados como no disponibles, sin permitir agregarlos al pedido.
-- **RF-005**: El cliente DEBE poder agregar, quitar y cambiar cantidades de productos en el pedido.
+- **RF-005**: El cliente DEBE poder agregar, quitar y cambiar cantidades de productos en el pedido, y vaciarlo con un botón "Empezar un pedido nuevo" (con confirmación). El pedido NO se vacía automáticamente al enviarlo; tras tocar "Enviar pedido", ese botón se muestra de forma destacada.
 - **RF-006**: El sistema DEBE calcular el subtotal por producto y el total del pedido.
 - **RF-007**: El sistema DEBE pedir al cliente: nombre (obligatorio), modalidad recojo o delivery (obligatorio), dirección y referencia (obligatorias si es delivery), método de pago (obligatorio) y comentario (opcional).
 - **RF-008**: El sistema DEBE generar un mensaje de pedido legible y abrir WhatsApp hacia el número del negocio con ese mensaje.
-- **RF-009**: El sistema DEBE mostrar los métodos de pago aceptados y, para Yape o Plin, el número y el nombre del titular.
-- **RF-010**: El sistema DEBE leer los productos desde una hoja de cálculo que el dueño puede editar.
+- **RF-009**: El sistema DEBE mostrar los métodos de pago aceptados y, para Yape o Plin, el número y el nombre del titular. Si Yape o Plin tienen el número o el titular vacío, ese método NO se muestra. Si no queda ningún método válido, el sistema DEBE ofrecer únicamente la opción "A coordinar por WhatsApp".
+- **RF-010**: El sistema DEBE leer desde una hoja de cálculo que el dueño puede editar los productos y los datos del negocio: nombre, logo, métodos de pago aceptados y datos de Yape/Plin. El número de WhatsApp NO se lee de la hoja: se define en la configuración inicial.
 - **RF-011**: El sistema DEBE funcionar sin que el cliente cree una cuenta ni instale nada.
 - **RF-012**: Toda la interfaz DEBE estar en español de Perú.
+- **RF-013**: Cuando no se puedan obtener los datos vigentes de la hoja, el sistema DEBE mostrar la última versión del catálogo guardada en el celular (si existe) con un aviso de datos posiblemente desactualizados, DEBE impedir el envío del pedido hasta revisar los datos vigentes y DEBE mantener visible el botón para escribir directo al WhatsApp del negocio.
 
 ### Entidades clave
 
-- **Negocio**: nombre, logo, número de WhatsApp, métodos de pago aceptados, datos de Yape/Plin.
+- **Negocio**: nombre, logo, métodos de pago aceptados y datos de Yape/Plin (editables en la hoja); número de WhatsApp (fijo en la configuración inicial).
 - **Producto**: identificador, nombre, descripción, precio, categoría, foto, disponible (sí/no), orden.
 - **Categoría**: nombre, orden.
 - **Pedido** (temporal, solo en el celular del cliente): productos y cantidades, datos del cliente, total. No se guarda en ningún servidor.
