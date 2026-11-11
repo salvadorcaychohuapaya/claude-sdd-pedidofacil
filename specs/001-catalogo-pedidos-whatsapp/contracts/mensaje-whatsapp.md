@@ -17,7 +17,7 @@ Se abre navegando a ese enlace (no en ventana nueva). El mensaje conserva tildes
 Los asteriscos `*texto*` son negrita de WhatsApp. Las líneas opcionales solo aparecen cuando corresponde.
 
 ```text
-*Nuevo pedido* 🛒
+*Nuevo pedido*
 
 *Cliente:* Ana Quispe
 *Modalidad:* Delivery

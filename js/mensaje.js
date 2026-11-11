@@ -16,7 +16,7 @@ export function construirMensaje(resumen, cliente) {
   const esDelivery = cliente.modalidad === "delivery";
   const totalCentimos = resumen.lineas.reduce((suma, linea) => suma + linea.subtotalCentimos, 0);
 
-  const partes = ["*Nuevo pedido* 🛒", "", `*Cliente:* ${cliente.nombre.trim()}`];
+  const partes = ["*Nuevo pedido*", "", `*Cliente:* ${cliente.nombre.trim()}`];
   partes.push(`*Modalidad:* ${esDelivery ? "Delivery" : "Recojo"}`);
   if (esDelivery) {
     partes.push(`*Dirección:* ${cliente.direccion.trim()}`);

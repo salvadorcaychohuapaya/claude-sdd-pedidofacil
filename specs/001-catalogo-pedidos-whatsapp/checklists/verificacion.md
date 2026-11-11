@@ -59,32 +59,37 @@
 
 | Escenario / paso de quickstart | Estado | Fecha / quién / dispositivo | Notas |
 |---|---|---|---|
-| Esc. 1: subtotales y total al instante | Pendiente | | |
-| Esc. 2: mensaje de WhatsApp completo y correcto | Pendiente | | |
-| Esc. 3: pedido vacío no se envía | Pendiente | | |
-| Esc. 4: delivery sin dirección no se envía | Pendiente | | |
-| Esc. 5: nota de delivery no incluido | Pendiente | | |
-| Esc. 6: pedido se conserva y "Empezar un pedido nuevo" destacado | Pendiente | | |
-| Esc. 7: "Empezar un pedido nuevo" vacía el pedido | Pendiente | | |
-| Esc. 8: producto agotado o eliminado se quita con aviso | Pendiente | | |
-| Esc. 9: aviso (incluido cambio de precio) y segundo toque en "Enviar pedido" | Pendiente | | |
+| Esc. 1: subtotales y total al instante | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 2: mensaje de WhatsApp completo y correcto | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 3: pedido vacío no se envía | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 4: delivery sin dirección no se envía | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 5: nota de delivery no incluido | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 6: pedido se conserva y "Empezar un pedido nuevo" destacado | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 7: "Empezar un pedido nuevo" vacía el pedido | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 8: producto agotado o eliminado se quita con aviso | Cumple | 2026-11-11 · el usuario |  |
+| Esc. 9: aviso (incluido cambio de precio) y segundo toque en "Enviar pedido" | Cumple | 2026-11-11 · el usuario |  |
 | Cierre de la página y reapertura | Pendiente | | |
 | Cantidades solo enteras de 1 a 99 | Pendiente | | |
-| Método de pago deja de ser válido tras actualizar la hoja: se limpia la selección, hay aviso y se elige otro | Pendiente | | |
-| Control de sumas CE-006 (`0.10`, `0.20`, `19.99`, `12,50`) | Pendiente | | |
-| Prueba en celular real: WhatsApp abre con el mensaje correcto (Android / iPhone) | Pendiente | | |
+| Método de pago deja de ser válido tras actualizar la hoja: se limpia la selección, hay aviso y se elige otro | Cumple | 2026-11-11 · el usuario | Paso 11. Con `metodos_pago` vacío solo se ofrece "A coordinar por WhatsApp". |
+| Control de sumas CE-006 (`0.10`, `0.20`, `19.99`, `12,50`) | Cumple | 2026-11-11 · el usuario | Con 0.10 + 0.20 + 19.99 + 12,50 el total en pantalla y en el mensaje es S/ 32.79. |
+| Prueba en celular real: WhatsApp abre con el mensaje correcto (Android / iPhone) | Cumple | 2026-11-11 · el usuario · iPhone 12 (Safari) y Redmi 15C (Chrome) | T036: WhatsApp abre con el mensaje correcto, con tildes, ñ y emojis. |
+| WhatsApp de escritorio (Windows): el mensaje llega bien, con emojis de producto | Cumple | 2026-11-11 · el usuario · WhatsApp de escritorio (Windows) | Llega bien, incluido el emoji de producto 🍍. Solo el 🛒 decorativo del encabezado llegaba como "�" y se quitó del mensaje. |
 
 **Revisión de principios I–VII (Historia 2)**
 
 | Principio | Cumple | Nota |
 |---|---|---|
-| I. Costo cero | Pendiente | |
-| II. Primero el celular | Pendiente | |
-| III. Simplicidad | Pendiente | |
-| IV. El dueño no programa | Pendiente | |
-| V. Privacidad | Pendiente | |
-| VI. Español de Perú | Pendiente | |
-| VII. Entrega por historias | Pendiente | |
+| I. Costo cero | Cumple | |
+| II. Primero el celular | Cumple | |
+| III. Simplicidad | Cumple | |
+| IV. El dueño no programa | Cumple | |
+| V. Privacidad | Cumple | |
+| VI. Español de Perú | Cumple | |
+| VII. Entrega por historias | Cumple | |
+
+**Observaciones (Historia 2)**
+
+- Retraso de publicación de Google variable: en una prueba el cambio de `metodos_pago` tardó más de 5 minutos en llegar y en otra mucho menos. La página usó en cada caso los datos vigentes que entregó Google. Se medirá en T042.
 
 ---
 

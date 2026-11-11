@@ -4,9 +4,9 @@ import { descargarHoja, interpretarNegocio, interpretarProductos } from "./hoja.
 import { mostrarCatalogo } from "./catalogo.js";
 import { centimosATexto, IMAGEN_GENERICA, urlFoto } from "./formato.js";
 import { almacenamientoPersistente } from "./almacenamiento.js";
-import { alCambiar, calcularResumen, obtenerPedido, quitar } from "./pedido.js";
-import { montarFormulario } from "./formulario.js";
-import { NOTA_DELIVERY } from "./mensaje.js";
+import { alCambiar, calcularResumen, marcarEnviado, obtenerPedido, quitar, revisarPedido } from "./pedido.js";
+import { avisosDeCliente, metodosDisponibles, montarFormulario } from "./formulario.js";
+import { construirMensaje, enlaceWhatsApp, NOTA_DELIVERY } from "./mensaje.js";
 
 // Textos visibles (fuente: contracts/textos-interfaz.md)
 const TEXTOS = {
@@ -23,6 +23,9 @@ const TEXTOS = {
   total: "Total",
   botonQuitar: "Quitar",
   sinAlmacenamiento: "Tu pedido no se guardará si cierras esta página.",
+  pedidoVacioEnvio: "Tu pedido está vacío. Agrega al menos un producto.",
+  envioBloqueado:
+    "No podemos confirmar los precios en este momento. Inténtalo de nuevo cuando tengas conexión o escríbenos por WhatsApp.",
 };
 
 const el = {
@@ -34,9 +37,18 @@ const el = {
   formulario: document.getElementById("formulario"),
 };
 
-/** Productos del catálogo vigente (para calcular el resumen) y escucha de cambios del pedido. */
+/** Productos del catálogo que se está mostrando (para calcular el resumen) y escucha de cambios del pedido. */
 let catalogo = null;
+let negocioVigente = null;
 let dejarDeEscucharPedido = null;
+
+/** Último catálogo mostrado, aunque se haya cambiado de pantalla: sirve para detectar cambios de precio. */
+let ultimoCatalogo = null;
+
+/** Avisos: los de la revisión al abrir (arriba) y los del envío (junto al botón "Enviar pedido"). */
+let avisosAlAbrir = [];
+let avisosEnvio = [];
+let envioConBotonWhatsApp = false;
 
 /** El número de WhatsApp de config.js: solo dígitos y con el código de país 51. */
 const numeroValido = /^51[0-9]+$/.test(String(CONFIG.whatsapp ?? ""));
@@ -55,6 +67,34 @@ function crearBotonWhatsApp() {
   return enlace;
 }
 
+/* ---------- Avisos ---------- */
+
+function rellenarAvisos(caja, textos, conBotonWhatsApp = false) {
+  const partes = textos.map((texto) => crear("p", undefined, texto));
+  if (conBotonWhatsApp && numeroValido) partes.push(crearBotonWhatsApp());
+  caja.replaceChildren(...partes);
+}
+
+/** Dibuja los avisos. Los del envío van junto al botón; si el formulario no está en pantalla, van arriba. */
+function pintarAvisos() {
+  const arriba = [];
+  if (!numeroValido) arriba.push(TEXTOS.numeroMal);
+  arriba.push(...avisosAlAbrir);
+  const cajaEnvio = el.formulario.querySelector(".avisos-envio");
+  if (cajaEnvio) {
+    rellenarAvisos(cajaEnvio, avisosEnvio, envioConBotonWhatsApp);
+    rellenarAvisos(el.aviso, arriba);
+  } else {
+    rellenarAvisos(el.aviso, [...arriba, ...avisosEnvio], envioConBotonWhatsApp);
+  }
+}
+
+function mostrarAvisosEnvio(textos, conBotonWhatsApp = false) {
+  avisosEnvio = textos;
+  envioConBotonWhatsApp = conBotonWhatsApp;
+  pintarAvisos();
+}
+
 /* ---------- Validación del número ---------- */
 
 function validarNumero() {
@@ -63,13 +103,14 @@ function validarNumero() {
     `config.js: "whatsapp" debe tener solo dígitos y empezar con 51 (valor actual: "${CONFIG.whatsapp}"). ` +
     "Se deshabilita el envío de pedidos."
   );
-  el.aviso.textContent = TEXTOS.numeroMal;
+  pintarAvisos();
 }
 
 /* ---------- Estados de la pantalla ---------- */
 
 function limpiar() {
   catalogo = null;
+  negocioVigente = null;
   dejarDeEscucharPedido?.();
   dejarDeEscucharPedido = null;
   el.resumen.replaceChildren();
@@ -183,9 +224,95 @@ function pintarResumen() {
   el.resumen.replaceChildren(...partes);
 }
 
+/* ---------- Pantalla vigente ---------- */
+
+/** Muestra el encabezado y, si hay productos, el catálogo, el formulario y el resumen; si no, "Sin productos". */
+function mostrarHoja(productos, negocio) {
+  mostrarEncabezado(negocio);
+  if (productos.length === 0) {
+    mostrarMensaje(TEXTOS.sinProductos, false); // Sin productos
+    return;
+  }
+
+  // Vigente
+  limpiar();
+  catalogo = productos;
+  negocioVigente = negocio;
+  mostrarCatalogo(el.filtro, el.productos, productos);
+  montarFormulario(el.formulario, negocio, {
+    alEnviar: enviarPedido,
+    alVaciar: () => {
+      avisosAlAbrir = [];
+      mostrarAvisosEnvio([]);
+    },
+    envioHabilitado: numeroValido,
+  });
+  pintarResumen();
+  dejarDeEscucharPedido = alCambiar((tipo) => {
+    if (tipo === "items" || tipo === "cliente") pintarResumen();
+  });
+}
+
+/* ---------- Envío del pedido ---------- */
+
+/**
+ * Flujo de "Enviar pedido": comprueba que no falte nada, vuelve a descargar la hoja y revisa el pedido.
+ * Si la revisión cambió algo, solo avisa (el cliente debe tocar el botón otra vez). Si todo está bien,
+ * marca el pedido como enviado y abre WhatsApp en esta misma pestaña. El pedido no se vacía.
+ * (Las cantidades siempre son enteros de 1 a 99: pedido.js no deja guardar otras.)
+ */
+async function enviarPedido() {
+  if (!numeroValido || !catalogo) return;
+
+  const pedido = obtenerPedido();
+  const faltan = [];
+  if (calcularResumen(pedido.items, catalogo).lineas.length === 0) faltan.push(TEXTOS.pedidoVacioEnvio);
+  faltan.push(...avisosDeCliente(pedido.cliente, metodosDisponibles(negocioVigente)));
+  if (faltan.length > 0) {
+    mostrarAvisosEnvio(faltan);
+    return;
+  }
+  mostrarAvisosEnvio([]);
+
+  let hoja;
+  try {
+    hoja = await descargarHoja(CONFIG);
+  } catch (error) {
+    console.error("No se pudo confirmar la hoja antes de enviar:", error);
+    mostrarAvisosEnvio([TEXTOS.envioBloqueado], true); // envío bloqueado + botón para escribir directo
+    return;
+  }
+
+  const negocio = interpretarNegocio(hoja.negocio);
+  const productos = interpretarProductos(hoja.productos);
+  if (productos.length === 0) {
+    avisosAlAbrir = [];
+    mostrarHoja(productos, negocio); // Sin productos
+    pintarAvisos();
+    return;
+  }
+
+  const revision = revisarPedido(productos, { anterior: catalogo, metodos: metodosDisponibles(negocio) });
+  ultimoCatalogo = productos;
+  if (revision.hayCambios) {
+    avisosAlAbrir = [];
+    mostrarHoja(productos, negocio);
+    mostrarAvisosEnvio(revision.avisos);
+    return; // WhatsApp no se abre solo: el cliente toca "Enviar pedido" otra vez
+  }
+
+  marcarEnviado(true);
+  const enviado = obtenerPedido();
+  const mensaje = construirMensaje(calcularResumen(enviado.items, productos), enviado.cliente);
+  location.href = enlaceWhatsApp(CONFIG.whatsapp, mensaje);
+}
+
 /* ---------- Arranque ---------- */
 
 async function arrancar() {
+  avisosAlAbrir = [];
+  avisosEnvio = [];
+  envioConBotonWhatsApp = false;
   mostrarCargando();
 
   let hoja;
@@ -195,27 +322,20 @@ async function arrancar() {
     console.error("No se pudo descargar la hoja:", error);
     mostrarEncabezado({ nombre: "", logo: "" }); // sin datos del negocio: "Catálogo"
     mostrarMensaje(TEXTOS.mensajeAmable, true); // Sin datos
+    pintarAvisos();
     return;
   }
 
   const negocio = interpretarNegocio(hoja.negocio);
   const productos = interpretarProductos(hoja.productos);
-  mostrarEncabezado(negocio);
 
-  if (productos.length === 0) {
-    mostrarMensaje(TEXTOS.sinProductos, false); // Sin productos
-    return;
+  // Revisión del pedido guardado contra el catálogo vigente (si no hay productos válidos no se toca el pedido).
+  if (productos.length > 0) {
+    avisosAlAbrir = revisarPedido(productos, { anterior: ultimoCatalogo, metodos: metodosDisponibles(negocio) }).avisos;
+    ultimoCatalogo = productos;
   }
-
-  // Vigente
-  limpiar();
-  catalogo = productos;
-  mostrarCatalogo(el.filtro, el.productos, productos);
-  montarFormulario(el.formulario, negocio);
-  pintarResumen();
-  dejarDeEscucharPedido = alCambiar((tipo) => {
-    if (tipo === "items" || tipo === "cliente") pintarResumen();
-  });
+  mostrarHoja(productos, negocio);
+  pintarAvisos();
 }
 
 validarNumero();

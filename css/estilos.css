@@ -379,3 +379,173 @@ input[type="checkbox"] {
   justify-content: center;
   gap: var(--espacio-3);
 }
+
+/* ---------- Historia 2: avisos con varias líneas ---------- */
+#aviso p,
+.avisos-envio p {
+  margin: 0 0 var(--espacio-2);
+}
+
+#aviso p:last-child,
+.avisos-envio p:last-child {
+  margin-bottom: 0;
+}
+
+.avisos-envio {
+  margin-bottom: var(--espacio-3);
+}
+
+.avisos-envio:empty {
+  display: none;
+}
+
+.avisos-envio:not(:empty) {
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio);
+  background: var(--color-aviso);
+}
+
+.avisos-envio .boton {
+  margin-top: var(--espacio-2);
+}
+
+/* ---------- Historia 2: controles de cantidad en la tarjeta ---------- */
+.tarjeta-controles {
+  margin-top: var(--espacio-1);
+}
+
+.cantidad-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.cantidad-valor {
+  min-width: 2ch;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* ---------- Historia 2: resumen del pedido ---------- */
+#resumen-pedido {
+  margin-bottom: var(--espacio-5);
+}
+
+.resumen-lista {
+  display: grid;
+  gap: var(--espacio-2);
+  margin: 0 0 var(--espacio-3);
+  padding: 0;
+  list-style: none;
+}
+
+.resumen-linea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.resumen-texto {
+  min-width: 0;
+}
+
+.resumen-nombre {
+  font-weight: 600;
+}
+
+.resumen-detalle {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+.resumen-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 var(--espacio-2);
+  font-size: var(--texto-titulo);
+  font-weight: 700;
+}
+
+.resumen-nota,
+.aviso-discreto {
+  margin: 0 0 var(--espacio-2);
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+/* ---------- Historia 2: formulario ---------- */
+#formulario {
+  margin-bottom: var(--espacio-5);
+}
+
+.campo {
+  min-width: 0;
+  margin: 0 0 var(--espacio-4);
+  padding: 0;
+  border: 0;
+}
+
+.campo legend {
+  padding: 0;
+  margin-bottom: var(--espacio-1);
+  font-weight: 600;
+}
+
+/* Cada opción mide al menos 44 px de alto: toda la fila se puede tocar */
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: var(--area-tactil);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* 16 px como mínimo: evita el acercamiento automático al tocar un campo en iPhone */
+input,
+select,
+textarea {
+  font-size: 1rem;
+}
+
+.boton-enviar {
+  width: 100%;
+  margin-bottom: var(--espacio-4);
+}
+
+/* ---------- Historia 2: "Empezar un pedido nuevo" ---------- */
+.nota-enviado {
+  margin: 0 0 var(--espacio-2);
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+.boton-nuevo {
+  width: 100%;
+}
+
+/* Después de enviar, el botón se destaca */
+.boton-nuevo.destacado {
+  background: var(--color-principal);
+  color: var(--color-sobre-principal);
+  box-shadow: 0 0 0 3px #c8e6d0;
+}
+
+.confirmacion {
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.confirmacion-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+}

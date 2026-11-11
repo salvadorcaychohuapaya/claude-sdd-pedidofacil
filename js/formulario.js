@@ -1,5 +1,5 @@
 // Datos del cliente y métodos de pago válidos según la hoja del negocio.
-import { actualizarCliente, obtenerPedido } from "./pedido.js";
+import { actualizarCliente, alCambiar, obtenerPedido, vaciarPedido } from "./pedido.js";
 
 // Textos visibles (fuente: contracts/textos-interfaz.md). Las etiquetas de los campos usan las
 // mismas palabras del mensaje de WhatsApp, porque el contrato no define etiquetas propias.
@@ -11,6 +11,18 @@ export const AVISOS = {
   direccion: "Escribe tu dirección para el delivery.",
   referencia: "Escribe una referencia para el delivery.",
   metodoPago: "Elige un método de pago.",
+};
+
+const BOTONES = {
+  enviar: "Enviar pedido",
+  nuevo: "Empezar un pedido nuevo",
+  confirmar: "Sí, empezar de nuevo",
+  cancelar: "Cancelar",
+};
+
+const TEXTOS_NUEVO = {
+  confirmacion: "¿Seguro que quieres empezar un pedido nuevo? Se borrará el pedido actual.",
+  despuesDeEnviar: "Si ya enviaste tu pedido, toca \"Empezar un pedido nuevo\" para no enviarlo dos veces.",
 };
 
 const ETIQUETAS = {
@@ -86,11 +98,18 @@ function grupoOpciones(nombre, leyenda, opciones, seleccionado, alElegir) {
   return grupo;
 }
 
+let dejarDeEscucharEnviado = null;
+
 /**
  * Dibuja en `contenedor` los campos del cliente (nombre, modalidad, dirección y referencia solo con
- * delivery, método de pago y comentario). Cada cambio se guarda en el pedido (pedido.js).
+ * delivery, método de pago y comentario), el botón "Enviar pedido" y "Empezar un pedido nuevo".
+ * Cada cambio se guarda en el pedido (pedido.js).
+ * Opciones: `alEnviar` (función, puede ser asíncrona) se llama al tocar "Enviar pedido";
+ * `alVaciar` se llama después de vaciar el pedido; `envioHabilitado` en false deja el botón
+ * de envío desactivado (número de WhatsApp mal configurado).
  */
-export function montarFormulario(contenedor, negocio) {
+export function montarFormulario(contenedor, negocio, opciones = {}) {
+  const { alEnviar, alVaciar, envioHabilitado = true } = opciones;
   const cliente = obtenerPedido().cliente;
 
   const nombre = document.createElement("input");
@@ -144,11 +163,80 @@ export function montarFormulario(contenedor, negocio) {
     (valor) => actualizarCliente({ metodoPago: valor })
   );
 
+  // Avisos del envío (qué falta, cambios en el pedido) justo encima del botón.
+  const avisosEnvio = crear("div", "avisos-envio");
+  avisosEnvio.setAttribute("role", "status");
+  avisosEnvio.setAttribute("aria-live", "polite");
+
+  const botonEnviar = crear("button", "boton-enviar", BOTONES.enviar);
+  botonEnviar.type = "button";
+  botonEnviar.disabled = !envioHabilitado;
+  let ocupado = false;
+  botonEnviar.addEventListener("click", async () => {
+    if (ocupado || !alEnviar) return;
+    ocupado = true;
+    botonEnviar.disabled = true;
+    try {
+      await alEnviar();
+    } finally {
+      ocupado = false;
+      botonEnviar.disabled = !envioHabilitado;
+    }
+  });
+
+  // "Empezar un pedido nuevo", con confirmación; se destaca después de tocar "Enviar pedido".
+  const bloqueNuevo = crear("div", "bloque-nuevo");
+  const notaEnviado = crear("p", "nota-enviado", TEXTOS_NUEVO.despuesDeEnviar);
+  const botonNuevo = crear("button", "boton-nuevo boton-secundario", BOTONES.nuevo);
+  botonNuevo.type = "button";
+  const confirmacion = crear("div", "confirmacion");
+  confirmacion.hidden = true;
+  confirmacion.setAttribute("role", "group");
+  const botonConfirmar = crear("button", undefined, BOTONES.confirmar);
+  botonConfirmar.type = "button";
+  const botonCancelar = crear("button", "boton-secundario", BOTONES.cancelar);
+  botonCancelar.type = "button";
+  const botonesConfirmacion = crear("div", "confirmacion-botones");
+  botonesConfirmacion.append(botonConfirmar, botonCancelar);
+  confirmacion.append(crear("p", undefined, TEXTOS_NUEVO.confirmacion), botonesConfirmacion);
+  bloqueNuevo.append(notaEnviado, botonNuevo, confirmacion);
+
+  botonNuevo.addEventListener("click", () => {
+    botonNuevo.hidden = true;
+    confirmacion.hidden = false;
+    botonCancelar.focus(); // la opción segura queda a mano
+  });
+  botonCancelar.addEventListener("click", () => {
+    confirmacion.hidden = true;
+    botonNuevo.hidden = false;
+    botonNuevo.focus();
+  });
+  botonConfirmar.addEventListener("click", () => {
+    vaciarPedido();
+    alVaciar?.();
+    montarFormulario(contenedor, negocio, opciones); // campos en blanco
+    contenedor.querySelector("#campo-nombre")?.focus();
+  });
+
+  function sincronizarEnviado() {
+    const enviado = obtenerPedido().enviado;
+    botonNuevo.classList.toggle("destacado", enviado);
+    notaEnviado.hidden = !enviado;
+  }
+  sincronizarEnviado();
+  dejarDeEscucharEnviado?.();
+  dejarDeEscucharEnviado = alCambiar((tipo) => {
+    if (tipo === "enviado" && botonNuevo.isConnected) sincronizarEnviado();
+  });
+
   contenedor.replaceChildren(
     campo("campo-nombre", ETIQUETAS.nombre, nombre),
     modalidad,
     datosDelivery,
     pago,
-    campo("campo-comentario", ETIQUETAS.comentario, comentario)
+    campo("campo-comentario", ETIQUETAS.comentario, comentario),
+    avisosEnvio,
+    botonEnviar,
+    bloqueNuevo
   );
 }
