@@ -11,7 +11,7 @@ Origen: pestaña "Negocio" de la hoja (clave/valor) + `config.js` para el númer
 | Campo | Origen | Tipo | Regla |
 |-------|--------|------|-------|
 | `nombre` | Hoja | Texto | Obligatorio; si falta, se muestra "Catálogo". |
-| `logo` | Hoja | URL de imagen | Opcional; si falta o falla, solo se muestra el nombre. Se procesa con `urlFoto()`. |
+| `logo` | Hoja | URL de imagen | Opcional; si falta o falla, solo se muestra el nombre. Se procesa con `urlFoto()`; un enlace de carpeta de Drive es inválido. La etiqueta `<img>` del logo lleva `referrerpolicy="no-referrer"`. |
 | `metodosPago` | Hoja | Lista | Valores reconocidos: `Yape`, `Plin`, `Efectivo`, `Transferencia`. Ver reglas de validez abajo. |
 | `yape` | Hoja | `{numero, titular}` | Solo válido si ambos tienen valor. |
 | `plin` | Hoja | `{numero, titular}` | Solo válido si ambos tienen valor. |
@@ -34,7 +34,7 @@ Origen: pestaña "Productos" de la hoja, una fila por producto.
 | `descripcion` | Texto | Opcional. Se muestra en un máximo de 2 líneas; si es más larga se corta con "…". Sin "ver más" en la versión 1. |
 | `precioCentimos` | Entero > 0 | **Obligatorio**; texto no numérico, vacío, cero o negativo → la fila no se muestra. |
 | `categoria` | Texto | Opcional; si falta, se agrupa en "Otros". |
-| `foto` | URL | Opcional; si falta o falla, imagen genérica. |
+| `foto` | URL | Opcional; si falta o falla, imagen genérica. Debe ser el enlace de **un archivo** de Drive (o un `https://` directo); un enlace de carpeta (`drive.google.com/drive/folders/...`) es inválido: imagen genérica y aviso en la consola. La etiqueta `<img>` lleva `referrerpolicy="no-referrer"`. |
 | `disponible` | Booleano | Se normaliza el texto (se quitan espacios al inicio y al final, y se ignoran mayúsculas y tildes). Si el resultado es `no` o `agotado` → **no disponible** (agotado). Vacío, `si` (o `sí`) y cualquier otro valor → **disponible**. |
 | `orden` | Número | Opcional; define el orden de aparición de los productos dentro de su categoría. Sin orden (o no numérico): después de los que sí tienen, en el orden de la hoja. A igual `orden`, se respeta el orden de la hoja. |
 

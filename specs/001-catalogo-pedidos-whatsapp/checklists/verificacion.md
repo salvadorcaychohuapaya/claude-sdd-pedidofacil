@@ -9,13 +9,16 @@
 
 ## Prueba de concepto (T007)
 
-- **Fecha / quién**: _pendiente_
-- **Hoja publicada como CSV, leída desde el navegador (computadora)**: _pendiente_
-- **Hoja publicada como CSV, leída desde celulares reales (modelo y navegador)**: _pendiente_
-- **Encabezado `access-control-allow-origin` de la respuesta de Google**: _pendiente (anotar el valor exacto)_
-- **Foto de Drive: formato que carga** (`lh3.googleusercontent.com/d/ID=w400` o `drive.google.com/thumbnail?id=ID&sz=w400`): _pendiente_
-- **Riesgo anotado**: Google puede limitar o cambiar el acceso a las fotos de Drive (límites de uso no documentados); la imagen genérica `img/generica.svg` sirve de respaldo.
-- **Decisión**: _pendiente_ (seguir con lo decidido en el plan, o alternativa de [research.md](../research.md) sección 2, confirmada con el usuario)
+- **Fecha / quién**: 2026-11-11, Salvador. Detalle completo en [docs/resultado-poc.md](../../../docs/resultado-poc.md).
+- **Hoja publicada como CSV, leída desde el navegador (computadora)**: **Cumple.** Windows, Brave y Chrome: los dos CSV se leen (HTTP 200, `text/csv; charset=utf-8`). Google redirige con 307 desde `pub?gid=...` hacia `doc-*-sheets.googleusercontent.com`. Tildes, ñ, emoji y valores con coma (entre comillas) llegan correctos.
+- **Hoja publicada como CSV, leída desde celulares reales (modelo y navegador)**: **Cumple en iPhone 12 (Safari) y en Redmi 15C (Chrome en Android)**, por la red Wi-Fi local: en ambos los dos CSV se leen bien y las fotos cargan con `referrerpolicy="no-referrer"`.
+- **Encabezado `access-control-allow-origin` de la respuesta de Google**: `Access-Control-Allow-Origin: *`
+- **Foto de Drive: formato que carga** (`lh3.googleusercontent.com/d/ID=w400` o `drive.google.com/thumbnail?id=ID&sz=w400`): **Cumple con `referrerpolicy="no-referrer"`.** Sin esa política, los dos formatos responden `429 Too Many Requests` (`text/html`) dentro de la página, en Brave y en Chrome, aunque abiertos en una pestaña aparte sí cargan. Con `referrerpolicy="no-referrer"` ambos cargan (HTTP 200, `image/jpeg`, 400×267) en Brave, Chrome y Safari de iPhone; en Chrome del Redmi 15C también cargan. **Formato elegido**: `https://lh3.googleusercontent.com/d/ID=w400` (una sola solicitud); `drive.google.com/thumbnail` queda de alternativa (redirige con 302 al mismo `lh3`).
+- **Regla obligatoria**: toda imagen que venga de Drive (fotos de productos y logo del negocio) lleva `referrerpolicy="no-referrer"`.
+- **Enlaces de carpeta**: un enlace de carpeta de Drive (`drive.google.com/drive/folders/...`) no sirve, porque no contiene el ID de un archivo. `urlFoto()` lo trata como inválido (imagen genérica y aviso en la consola) y la guía del dueño explica que se copia el enlace de cada foto.
+- **Servidor local en Windows**: el puerto 8080 falló con `WinError 10013` (reservado por Windows); se usó el 5500, con el comando `python` (no `py`).
+- **Riesgo anotado**: Google puede limitar o cambiar el acceso a las fotos de Drive (límites de uso no documentados; ya se vio un 429 por el referer); la imagen genérica `img/generica.svg` sirve de respaldo.
+- **Decisión**: se mantiene el plan técnico. No se activa ninguna alternativa de [research.md](../research.md) sección 2.
 
 ---
 

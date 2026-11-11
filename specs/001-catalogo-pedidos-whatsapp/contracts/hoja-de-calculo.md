@@ -17,7 +17,7 @@ Una fila por producto. Cada presentación (1/4 pollo, 1/2 pollo; vaso chico, vas
 | `descripcion` | No | `Con papas y ensalada` | Corta: se muestra en un máximo de 2 líneas y, si es más larga, se corta con "…". |
 | `precio` | **Sí** | `18.50` o `18,50` | En soles, sin el símbolo S/. Vacío, cero o texto → la fila no se muestra. |
 | `categoria` | No | `Pollos` | Sin categoría → "Otros". |
-| `foto` | No | enlace de Drive o `https://...` | Vacío o roto → imagen genérica. |
+| `foto` | No | enlace de Drive o `https://...` | Vacío o roto → imagen genérica. Se copia el enlace **de cada foto** (`.../file/d/ID/view...`), no el de la carpeta: un enlace de carpeta (`.../drive/folders/...`) se trata como inválido y se ve la imagen genérica. Las imágenes de Drive se piden con `referrerpolicy="no-referrer"`. |
 | `disponible` | No | `si` / `no` | `no` o `agotado` → aparece agotado y no se puede agregar. No importan mayúsculas, tildes ni espacios (`NO`, ` Agotado `, `sí`). Vacío, `sí` u otro valor → disponible. |
 | `orden` | No | `10` | Número menor aparece antes. También define el orden de las categorías (la categoría con el menor `orden` entre sus productos va primero; ver [../data-model.md](../data-model.md)). |
 
@@ -28,7 +28,7 @@ Dos columnas: `clave` y `valor`. Una fila por dato.
 | `clave` | Obligatoria | Ejemplo de `valor` | Notas |
 |---------|:-----------:|--------------------|-------|
 | `nombre` | Recomendada | `Pollería El Sabor` | Si falta, se muestra "Catálogo". |
-| `logo` | No | enlace de Drive o `https://...` | Si falta, solo se ve el nombre. |
+| `logo` | No | enlace de Drive o `https://...` | Si falta, solo se ve el nombre. Igual que `foto`: enlace del archivo, no de la carpeta; se pide con `referrerpolicy="no-referrer"`. |
 | `metodos_pago` | No | `Yape, Plin, Efectivo` | Separados por comas. Valores: `Yape`, `Plin`, `Efectivo`, `Transferencia`. |
 | `yape_numero` | Si usa Yape | `987654321` | |
 | `yape_titular` | Si usa Yape | `María Pérez` | |
@@ -48,6 +48,7 @@ El **número de WhatsApp del negocio no va en la hoja**: está en `config.js` (d
 | Falta una pestaña o no se puede descargar | Estado "Copia guardada" o "Sin datos" (ver modelo de datos). |
 | Encabezados con otro orden de columnas | Se leen por nombre de columna, no por posición. |
 | Columna desconocida | Se ignora. |
+| `foto` o `logo` con enlace de carpeta de Drive | Se trata como inválido: imagen genérica (o solo el nombre, en el logo) y aviso en la consola. |
 
 ## Frescura
 

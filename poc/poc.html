@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prueba de concepto</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font: 16px/1.4 system-ui, sans-serif; color: #222; background: #fafafa; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h2 { font-size: 1rem; margin: 20px 0 6px; }
+  p.nota { margin: 0 0 12px; color: #555; font-size: .9rem; }
+  label { display: block; margin: 12px 0 4px; font-weight: 600; }
+  input { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid #aaa; border-radius: 6px; }
+  button { width: 100%; margin-top: 16px; padding: 12px; font-size: 1rem; font-weight: 600;
+           border: 0; border-radius: 6px; background: #1a7f37; color: #fff; }
+  button:disabled { background: #888; }
+  pre { margin: 0; padding: 10px; background: #fff; border: 1px solid #ccc; border-radius: 6px;
+        white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8rem; max-height: 260px; overflow: auto; }
+  .ok { color: #1a7f37; font-weight: 600; }
+  .error { color: #b00020; font-weight: 600; }
+  img { display: block; max-width: 100%; height: auto; margin-top: 6px; border: 1px solid #ccc; background: #eee; min-height: 40px; }
+  .url { font-size: .75rem; color: #555; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<h1>Prueba de concepto</h1>
+<p class="nota">Página descartable: comprueba si el navegador lee los CSV de Google y si carga la foto de Drive.</p>
+
+<label for="csvProductos">Enlace CSV de "Productos"</label>
+<input id="csvProductos" type="url" inputmode="url" placeholder="https://docs.google.com/.../pub?output=csv">
+
+<label for="csvNegocio">Enlace CSV de "Negocio"</label>
+<input id="csvNegocio" type="url" inputmode="url" placeholder="https://docs.google.com/.../pub?output=csv">
+
+<label for="enlaceFoto">Enlace de foto de Drive</label>
+<input id="enlaceFoto" type="url" inputmode="url" placeholder="https://drive.google.com/file/d/ID/view?usp=sharing">
+
+<button id="probar" type="button">Probar</button>
+
+<h2>CSV "Productos"</h2>
+<div id="estadoProductos"></div>
+<pre id="textoProductos">(sin probar)</pre>
+
+<h2>CSV "Negocio"</h2>
+<div id="estadoNegocio"></div>
+<pre id="textoNegocio">(sin probar)</pre>
+
+<h2>Foto: formato lh3.googleusercontent.com</h2>
+<div id="estadoFotoA"></div>
+<div id="urlFotoA" class="url"></div>
+<div id="polA" class="url"></div>
+<img id="fotoA" alt="Foto con lh3.googleusercontent.com" referrerpolicy="no-referrer" hidden>
+
+<h2>Foto: formato drive.google.com/thumbnail</h2>
+<div id="estadoFotoB"></div>
+<div id="urlFotoB" class="url"></div>
+<div id="polB" class="url"></div>
+<img id="fotoB" alt="Foto con drive.google.com/thumbnail" referrerpolicy="no-referrer" hidden>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  function estado(el, clase, texto) {
+    el.className = clase;
+    el.textContent = texto;
+  }
+
+  function extraerId(enlace) {
+    var m = enlace.match(/\/file\/d\/([\w-]+)/) ||
+            enlace.match(/[?&]id=([\w-]+)/) ||
+            enlace.match(/\/d\/([\w-]+)/);
+    return m ? m[1] : null;
+  }
+
+  function descargar(url, destinoTexto, destinoEstado) {
+    if (!url) {
+      estado(destinoEstado, "error", "Falta el enlace.");
+      destinoTexto.textContent = "";
+      return Promise.resolve();
+    }
+    estado(destinoEstado, "", "Descargando…");
+    destinoTexto.textContent = "";
+    return fetch(url, { cache: "no-cache" }).then(function (resp) {
+      var tipo = resp.headers.get("content-type") || "(sin tipo)";
+      return resp.text().then(function (texto) {
+        if (resp.ok) {
+          estado(destinoEstado, "ok", "Se leyó. HTTP " + resp.status + " · " + tipo + " · " + texto.length + " caracteres");
+        } else {
+          estado(destinoEstado, "error", "Respuesta con error. HTTP " + resp.status + " " + resp.statusText + " · " + tipo);
+        }
+        destinoTexto.textContent = texto;
+      });
+    }).catch(function (err) {
+      estado(destinoEstado, "error",
+        "No se pudo leer: " + err.name + ": " + err.message +
+        ". Si en la pestaña de red de las herramientas del navegador la petición aparece bloqueada por CORS " +
+        "(acceso entre sitios), ese es el motivo.");
+      destinoTexto.textContent = "";
+    });
+  }
+
+  function cargarFoto(img, estadoEl, urlEl, polEl, url) {
+    urlEl.textContent = url;
+    polEl.textContent = "Política de referer usada: " +
+      (img.referrerPolicy || "(ninguna: se usa la predeterminada del navegador)") +
+      " · atributo en la etiqueta: " + (img.getAttribute("referrerpolicy") || "(ausente)");
+    estado(estadoEl, "", "Cargando…");
+    img.hidden = false;
+    img.onload = function () {
+      estado(estadoEl, "ok", "La foto cargó (" + img.naturalWidth + "×" + img.naturalHeight + " px).");
+    };
+    img.onerror = function () {
+      estado(estadoEl, "error", "La foto NO cargó.");
+    };
+    img.removeAttribute("src");
+    img.src = url;
+  }
+
+  $("probar").addEventListener("click", function () {
+    var boton = $("probar");
+    var urlProductos = $("csvProductos").value.trim();
+    var urlNegocio = $("csvNegocio").value.trim();
+    var enlaceFoto = $("enlaceFoto").value.trim();
+
+    boton.disabled = true;
+
+    // Fotos
+    var id = enlaceFoto ? extraerId(enlaceFoto) : null;
+    if (id) {
+      cargarFoto($("fotoA"), $("estadoFotoA"), $("urlFotoA"), $("polA"), "https://lh3.googleusercontent.com/d/" + id + "=w400");
+      cargarFoto($("fotoB"), $("estadoFotoB"), $("urlFotoB"), $("polB"), "https://drive.google.com/thumbnail?id=" + id + "&sz=w400");
+    } else {
+      var msg = enlaceFoto ? "No se pudo extraer el ID del enlace de Drive." : "Falta el enlace de la foto.";
+      ["A", "B"].forEach(function (s) {
+        estado($("estadoFoto" + s), "error", msg);
+        $("urlFoto" + s).textContent = "";
+        $("pol" + s).textContent = "";
+        $("foto" + s).hidden = true;
+      });
+    }
+
+    // CSV en paralelo
+    Promise.all([
+      descargar(urlProductos, $("textoProductos"), $("estadoProductos")),
+      descargar(urlNegocio, $("textoNegocio"), $("estadoNegocio"))
+    ]).then(function () {
+      boton.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>

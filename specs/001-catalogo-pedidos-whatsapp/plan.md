@@ -18,6 +18,8 @@ Enfoque técnico (de `docs/decisiones-tecnicas.md`): HTML, CSS y JavaScript puro
 
 **Almacenamiento**: `localStorage` del navegador (pedido y última copia del catálogo). Fuente de datos: Google Sheets publicado como CSV. Sin servidor propio.
 
+**Fotos**: se alojan en el Drive del dueño y se piden con `https://lh3.googleusercontent.com/d/ID=w400`. Regla obligatoria comprobada en la prueba de concepto: **toda imagen que venga de Drive (fotos de productos y logo del negocio) lleva `referrerpolicy="no-referrer"`**; sin ella Google responde 429. Un enlace de carpeta de Drive se rechaza (imagen genérica y aviso en la consola). Ver [research.md](research.md), sección 1.
+
 **Pruebas**: manuales, con los escenarios de aceptación de la spec en vista de celular de 360 px (emulación del navegador y al menos un celular real). Los casos de [quickstart.md](quickstart.md) cubren los cálculos y el mensaje.
 
 **Plataforma de destino**: navegadores móviles actuales (Chrome en Android, Safari en iOS) desde 360 px de ancho; también funciona en escritorio.

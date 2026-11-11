@@ -21,10 +21,19 @@ Las decisiones técnicas de partida están en `docs/decisiones-tecnicas.md` y no
 1. Acepta el enlace que el dueño copia de Drive (`https://drive.google.com/file/d/ID/view?...` o `...open?id=ID`), extrae el `ID` y construye `https://lh3.googleusercontent.com/d/ID=w400` (ancho reducido para conexiones lentas).
 2. Acepta también cualquier otro enlace directo `https://...` tal cual, de modo que el dueño pueda usar la opción C si lo prefiere.
 3. Si la celda está vacía o la imagen falla al cargar, muestra `img/generica.svg` (caso límite de la spec).
+4. Rechaza como inválido un enlace de carpeta de Drive (`drive.google.com/drive/folders/...`): no contiene el ID de un archivo. Usa la imagen genérica y deja un aviso en la consola.
+5. **Toda imagen que venga de Drive (fotos y logo) lleva `referrerpolicy="no-referrer"`** (comprobado, ver abajo).
 
 **Por qué**: es la opción con menos pasos para el dueño, y como toda la lógica está en una sola función, si Google cambia el formato basta cambiar esa función (o pasar a la opción C) sin tocar el resto.
 
-**Por verificar** (primera tarea): que `lh3.googleusercontent.com/d/ID=w400` cargue en Chrome Android y Safari iOS con una foto compartida por enlace. Las guías consultadas dicen que es el formato que funciona a principios de 2026 y que `drive.google.com/uc?id=` dejó de funcionar. Alternativa de respaldo: `https://drive.google.com/thumbnail?id=ID&sz=w400`. No se encontró información sobre límites de uso.
+**Comprobado en la prueba de concepto (2026-11-11, T005–T007; detalle en [../../docs/resultado-poc.md](../../docs/resultado-poc.md))**:
+
+- Sin `referrerpolicy`, `lh3.googleusercontent.com/d/ID=w400` y `drive.google.com/thumbnail?id=ID&sz=w400` responden **429 Too Many Requests** (`text/html`) cuando la imagen está dentro de la página (Brave y Chrome en Windows), aunque la misma foto abierta en una pestaña aparte sí carga.
+- Con `referrerpolicy="no-referrer"` en la etiqueta `<img>`, los dos formatos cargan (HTTP 200, `image/jpeg`, 400×267) en Brave, Chrome y Safari de iPhone.
+- **Formato elegido**: `https://lh3.googleusercontent.com/d/ID=w400` (una sola solicitud). `drive.google.com/thumbnail` queda de alternativa: redirige con 302 al mismo `lh3`.
+- Un enlace de carpeta de Drive no sirve (no trae el ID de un archivo); `urlFoto()` lo rechaza y la guía del dueño explica que se copia el enlace de cada foto.
+- **Android**: en un Redmi 15C con Chrome las fotos también cargan con `referrerpolicy="no-referrer"`.
+- No se encontró información sobre límites de uso; sigue siendo un riesgo, con la imagen genérica como respaldo.
 
 Fuentes consultadas (comunidad, no oficiales): [Google Apps Script Community](https://groups.google.com/g/google-apps-script-community/c/84nBhhce8LY), [DEV Community](https://dev.to/temmietope/embedding-a-google-drive-image-in-html-3mm9), [Labnol](https://labnol.org/embed/google/drive), [MIT App Inventor Community](https://community.appinventor.mit.edu/t/url-local-image-for-fancygallery/106840?page=2).
 
@@ -35,6 +44,8 @@ Fuentes consultadas (comunidad, no oficiales): [Google Apps Script Community](ht
 **Decisión (de partida)**: pestañas "Productos" y "Negocio" publicadas en la web como CSV, descargadas con `fetch` en paralelo (una sola espera de red).
 
 **Riesgo principal – CORS**: las búsquedas encontraron mensajes de la comunidad que dicen que Google cambió el comportamiento de CORS para las hojas publicadas y que, en algunos casos, el navegador ya no puede leer el CSV directamente. No es información oficial ni confirmada.
+
+**Resultado de la prueba de concepto (2026-11-11, T005–T007)**: el riesgo **no se materializó**. Desde `localhost`, en Brave y Chrome (Windows) y en Safari de iPhone 12, los dos CSV publicados se leen con `fetch`: HTTP 200, `text/csv; charset=utf-8`, y la respuesta trae `Access-Control-Allow-Origin: *`. Google redirige con 307 desde `pub?gid=...` hacia `doc-*-sheets.googleusercontent.com` y el `fetch` lo sigue sin problema. Tildes, ñ, emoji y valores con coma entre comillas llegan correctos. También en un Redmi 15C con Chrome (Android) los dos CSV se leen. Pendiente: la prueba por `https` en el sitio publicado (T055). **Decisión**: se mantiene la decisión de partida; no se activa ninguna de las alternativas (a) ni (b) del plan siguiente.
 
 **Plan**:
 

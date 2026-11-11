@@ -19,18 +19,26 @@ Esta guía sirve para comprobar que la funcionalidad cumple los escenarios de ac
 
 1. Abrir una terminal en la raíz del repositorio (donde está `index.html`).
 2. Iniciar un servidor estático local, con la primera opción que tengas:
-   - Python (Windows): `py -m http.server 8080` (o `python -m http.server 8080`).
-   - Node.js: `npx serve -l 8080`.
-   - Visual Studio Code: extensión "Live Server" → "Go Live".
-3. Abrir `http://localhost:8080` en el navegador. Para detenerlo: `Ctrl + C` en la terminal.
+   - Python (Windows): `python -m http.server 5500 --bind 127.0.0.1` (solo esta computadora). En algunas computadoras el comando es `py` en vez de `python`.
+   - Node.js: `npx serve -l 5500`.
+   - Visual Studio Code: extensión "Live Server" → "Go Live" (usa el puerto 5500).
+3. Abrir `http://localhost:5500` en el navegador. Para detenerlo: `Ctrl + C` en la terminal.
 
 Son herramientas de desarrollo gratuitas y no forman parte del producto: el sitio publicado sigue siendo solo archivos estáticos, sin compilación.
 
-**Probar en un celular real** (misma red Wi-Fi que la computadora): iniciar el servidor escuchando en toda la red (`py -m http.server 8080 --bind 0.0.0.0`), averiguar la IP de la computadora (`ipconfig`) y abrir `http://<IP>:8080` en el celular; si el firewall de Windows lo pide, permitir el acceso en red privada. Las pruebas finales de WhatsApp, fotos de Drive y rendimiento se repiten con el sitio ya publicado, por `https`.
+**Puerto**: se usa el **5500**. El 8080 puede fallar en Windows con `WinError 10013` (puerto reservado por el sistema).
+
+**Probar en un celular real** (misma red Wi-Fi que la computadora):
+1. Poner la red de casa como **Privada** en Windows.
+2. Iniciar el servidor escuchando en toda la red: `python -m http.server 5500 --bind 0.0.0.0`.
+3. Si el Firewall de Windows lo pide, **permitir Python** en redes privadas.
+4. Averiguar la IP de la computadora (`ipconfig`, dirección IPv4) y abrir `http://<IP>:5500` en el celular.
+
+Las pruebas finales de WhatsApp, fotos de Drive y rendimiento se repiten con el sitio ya publicado, por `https`.
 
 ## Prueba 0 – Verificación de lectura de la hoja (primera tarea)
 
-Abrir la página y comprobar en la consola del navegador que ambas pestañas se descargan y se leen sin error de acceso. Si falla, ver la sección 2 de [research.md](research.md) antes de continuar. Comprobar también que una foto compartida desde Drive carga en Chrome Android y Safari iOS. En las herramientas del navegador (pestaña de red), revisar el encabezado `access-control-allow-origin` de la respuesta de Google y anotarlo. Los resultados van en [checklists/verificacion.md](checklists/verificacion.md).
+Abrir la página y comprobar en la consola del navegador que ambas pestañas se descargan y se leen sin error de acceso. Si falla, ver la sección 2 de [research.md](research.md) antes de continuar. Comprobar también que una foto compartida desde Drive carga en Chrome Android y Safari iOS (la etiqueta `<img>` debe llevar `referrerpolicy="no-referrer"`; sin ella Google responde 429). En las herramientas del navegador (pestaña de red), revisar el encabezado `access-control-allow-origin` de la respuesta de Google y anotarlo. Los resultados van en [checklists/verificacion.md](checklists/verificacion.md).
 
 ## Historia 1 – Ver el catálogo
 
