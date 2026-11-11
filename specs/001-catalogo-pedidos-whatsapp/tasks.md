@@ -46,10 +46,10 @@ Sitio estático de una sola página: `index.html`, `config.js`, `css/estilos.css
 
 **Propósito**: crear la estructura de archivos del plan.
 
-- [ ] T008 Crear la estructura del plan: `index.html`, `config.js`, `css/estilos.css`, `js/app.js`, `js/hoja.js`, `js/catalogo.js`, `js/pedido.js`, `js/formulario.js`, `js/mensaje.js`, `js/almacenamiento.js`, `js/formato.js`, `img/` y `docs/`, cada archivo de JavaScript con un comentario de una línea, en español, que indique su propósito según [plan.md](plan.md).
-- [ ] T009 [P] Crear `img/generica.svg`: imagen genérica liviana (ícono de producto neutro, menos de 2 KB) para fotos vacías o que no cargan.
-- [ ] T010 [P] Crear `config.js` según [contracts/config.md](contracts/config.md): `export const CONFIG` con `whatsapp` (solo dígitos, empieza con `51`), `hojaProductosCsv` y `hojaNegocioCsv`, con valores de ejemplo claramente marcados.
-- [ ] T011 👤 **[MANUAL]** Poner en `config.js` tu número de WhatsApp de prueba (con `51`, sin `+`, espacios ni guiones) y los dos enlaces CSV obtenidos en T003.
+- [X] T008 Crear la estructura del plan: `index.html`, `config.js`, `css/estilos.css`, `js/app.js`, `js/hoja.js`, `js/catalogo.js`, `js/pedido.js`, `js/formulario.js`, `js/mensaje.js`, `js/almacenamiento.js`, `js/formato.js`, `img/` y `docs/`, cada archivo de JavaScript con un comentario de una línea, en español, que indique su propósito según [plan.md](plan.md).
+- [X] T009 [P] Crear `img/generica.svg`: imagen genérica liviana (ícono de producto neutro, menos de 2 KB) para fotos vacías o que no cargan.
+- [X] T010 [P] Crear `config.js` según [contracts/config.md](contracts/config.md): `export const CONFIG` con `whatsapp` (solo dígitos, empieza con `51`), `hojaProductosCsv` y `hojaNegocioCsv`, con valores de ejemplo claramente marcados.
+- [X] T011 👤 **[MANUAL]** Poner en `config.js` tu número de WhatsApp de prueba (con `51`, sin `+`, espacios ni guiones) y los dos enlaces CSV obtenidos en T003.
 
 ---
 
