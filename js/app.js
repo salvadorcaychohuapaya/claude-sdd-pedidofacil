@@ -2,7 +2,11 @@
 import { CONFIG } from "../config.js";
 import { descargarHoja, interpretarNegocio, interpretarProductos } from "./hoja.js";
 import { mostrarCatalogo } from "./catalogo.js";
-import { IMAGEN_GENERICA, urlFoto } from "./formato.js";
+import { centimosATexto, IMAGEN_GENERICA, urlFoto } from "./formato.js";
+import { almacenamientoPersistente } from "./almacenamiento.js";
+import { alCambiar, calcularResumen, obtenerPedido, quitar } from "./pedido.js";
+import { montarFormulario } from "./formulario.js";
+import { NOTA_DELIVERY } from "./mensaje.js";
 
 // Textos visibles (fuente: contracts/textos-interfaz.md)
 const TEXTOS = {
@@ -14,6 +18,11 @@ const TEXTOS = {
   botonReintentar: "Reintentar",
   mensajePrellenado: "Hola, quiero hacer un pedido.",
   nombreFalta: "Catálogo",
+  tituloPedido: "Tu pedido",
+  pedidoVacio: "Aún no has agregado productos. Toca \"Agregar\" en los que quieras.",
+  total: "Total",
+  botonQuitar: "Quitar",
+  sinAlmacenamiento: "Tu pedido no se guardará si cierras esta página.",
 };
 
 const el = {
@@ -21,7 +30,13 @@ const el = {
   aviso: document.getElementById("aviso"),
   filtro: document.getElementById("filtro-categorias"),
   productos: document.getElementById("productos"),
+  resumen: document.getElementById("resumen-pedido"),
+  formulario: document.getElementById("formulario"),
 };
+
+/** Productos del catálogo vigente (para calcular el resumen) y escucha de cambios del pedido. */
+let catalogo = null;
+let dejarDeEscucharPedido = null;
 
 /** El número de WhatsApp de config.js: solo dígitos y con el código de país 51. */
 const numeroValido = /^51[0-9]+$/.test(String(CONFIG.whatsapp ?? ""));
@@ -54,6 +69,11 @@ function validarNumero() {
 /* ---------- Estados de la pantalla ---------- */
 
 function limpiar() {
+  catalogo = null;
+  dejarDeEscucharPedido?.();
+  dejarDeEscucharPedido = null;
+  el.resumen.replaceChildren();
+  el.formulario.replaceChildren();
   el.filtro.replaceChildren();
   el.productos.replaceChildren();
   el.productos.removeAttribute("aria-busy");
@@ -113,6 +133,56 @@ function mostrarEncabezado(negocio) {
   el.encabezado.replaceChildren(...partes);
 }
 
+/* ---------- Resumen del pedido ---------- */
+
+/** "Tu pedido": productos con cantidad, subtotal por producto y total, siempre con el catálogo vigente. */
+function pintarResumen() {
+  if (!catalogo) return;
+  const pedido = obtenerPedido();
+  const resumen = calcularResumen(pedido.items, catalogo);
+
+  const titulo = crear("h2", undefined, TEXTOS.tituloPedido);
+  titulo.tabIndex = -1;
+  const partes = [titulo];
+
+  if (resumen.lineas.length === 0) {
+    partes.push(crear("p", "estado-texto", TEXTOS.pedidoVacio));
+  } else {
+    const lista = crear("ul", "resumen-lista");
+    for (const linea of resumen.lineas) {
+      const item = crear("li", "resumen-linea");
+      const texto = crear("div", "resumen-texto");
+      texto.append(
+        crear("div", "resumen-nombre", linea.nombre),
+        crear(
+          "div",
+          "resumen-detalle",
+          `${linea.cantidad} x ${centimosATexto(linea.precioCentimos)} = ${centimosATexto(linea.subtotalCentimos)}`
+        )
+      );
+      const botonQuitar = crear("button", "boton-secundario", TEXTOS.botonQuitar);
+      botonQuitar.type = "button";
+      botonQuitar.addEventListener("click", () => {
+        quitar(linea.id);
+        el.resumen.querySelector("h2")?.focus();
+      });
+      item.append(texto, botonQuitar);
+      lista.append(item);
+    }
+    partes.push(lista);
+
+    const total = crear("p", "resumen-total");
+    total.append(crear("span", undefined, TEXTOS.total), crear("strong", undefined, centimosATexto(resumen.totalCentimos)));
+    partes.push(total);
+    if (pedido.cliente.modalidad === "delivery") partes.push(crear("p", "resumen-nota", NOTA_DELIVERY));
+  }
+
+  // Aviso discreto: sin almacenamiento en el celular el pedido se pierde al cerrar la página.
+  if (!almacenamientoPersistente()) partes.push(crear("p", "aviso-discreto", TEXTOS.sinAlmacenamiento));
+
+  el.resumen.replaceChildren(...partes);
+}
+
 /* ---------- Arranque ---------- */
 
 async function arrancar() {
@@ -139,7 +209,13 @@ async function arrancar() {
 
   // Vigente
   limpiar();
+  catalogo = productos;
   mostrarCatalogo(el.filtro, el.productos, productos);
+  montarFormulario(el.formulario, negocio);
+  pintarResumen();
+  dejarDeEscucharPedido = alCambiar((tipo) => {
+    if (tipo === "items" || tipo === "cliente") pintarResumen();
+  });
 }
 
 validarNumero();

@@ -1,11 +1,14 @@
 // Productos, categorías, tarjetas de producto y filtro por categoría.
 import { centimosATexto, IMAGEN_GENERICA, normalizar, urlFoto } from "./formato.js";
+import { agregar, alCambiar, cambiarCantidad, cantidadDe, CANTIDAD_MAX, quitar } from "./pedido.js";
 
 // Textos visibles (fuente: contracts/textos-interfaz.md)
 const TEXTOS = {
   todos: "Todos",
   otros: "Otros",
   agotado: "Agotado",
+  agregar: "Agregar",
+  quitar: "Quitar",
 };
 
 const CLAVE_TODOS = "__todos__";
@@ -92,9 +95,61 @@ function crear(etiqueta, clase, texto) {
 }
 
 /**
+ * Controles del producto: botón "Agregar" y, cuando ya está en el pedido, los controles de
+ * cantidad (menos, más y quitar). Ambos existen en la tarjeta y `sincronizarControles` muestra
+ * el que corresponde, para no perder el foco al cambiar.
+ */
+function crearControles(producto) {
+  const caja = crear("div", "tarjeta-controles");
+
+  const botonAgregar = crear("button", "boton-agregar", TEXTOS.agregar);
+  botonAgregar.type = "button";
+  botonAgregar.addEventListener("click", () => {
+    agregar(producto.id);
+    caja.querySelector(".boton-mas").focus();
+  });
+
+  const cantidad = crear("div", "cantidad-controles");
+  const menos = crear("button", "boton-menos boton-secundario", "−");
+  menos.type = "button";
+  menos.setAttribute("aria-label", "Menos");
+  menos.addEventListener("click", () => {
+    const resultado = cambiarCantidad(producto.id, cantidadDe(producto.id) - 1);
+    if (resultado === "quitado") botonAgregar.focus();
+  });
+  const valor = crear("span", "cantidad-valor", "0");
+  valor.setAttribute("aria-live", "polite");
+  const mas = crear("button", "boton-mas boton-secundario", "+");
+  mas.type = "button";
+  mas.setAttribute("aria-label", "Más");
+  mas.addEventListener("click", () => agregar(producto.id));
+  const botonQuitar = crear("button", "boton-quitar boton-secundario", TEXTOS.quitar);
+  botonQuitar.type = "button";
+  botonQuitar.addEventListener("click", () => {
+    quitar(producto.id);
+    botonAgregar.focus();
+  });
+  cantidad.append(menos, valor, mas, botonQuitar);
+
+  caja.append(botonAgregar, cantidad);
+  return caja;
+}
+
+/** Muestra en la tarjeta "Agregar" o los controles de cantidad, según lo que haya en el pedido. */
+function sincronizarControles(tarjeta) {
+  const caja = tarjeta.querySelector(".tarjeta-controles");
+  if (!caja) return; // producto agotado: sin controles
+  const cantidad = cantidadDe(tarjeta.dataset.id);
+  caja.querySelector(".boton-agregar").hidden = cantidad > 0;
+  caja.querySelector(".cantidad-controles").hidden = cantidad === 0;
+  caja.querySelector(".cantidad-valor").textContent = String(cantidad);
+  caja.querySelector(".boton-mas").disabled = cantidad >= CANTIDAD_MAX;
+}
+
+/**
  * Crea la tarjeta de un producto: foto, nombre, descripción corta (máximo 2 líneas, el
- * recorte con "…" lo hace el CSS), precio y categoría. Un producto no disponible muestra
- * "Agotado". Esta historia no incluye forma de agregarlo al pedido.
+ * recorte con "…" lo hace el CSS), precio y categoría. Un producto disponible tiene el botón
+ * "Agregar" y los controles de cantidad; uno no disponible muestra "Agotado" y no tiene botón.
  */
 export function crearTarjeta(producto) {
   const tarjeta = crear("article", producto.disponible ? "tarjeta" : "tarjeta agotado");
@@ -126,8 +181,10 @@ export function crearTarjeta(producto) {
 
   const categoria = crear("p", "tarjeta-categoria", producto.categoria || TEXTOS.otros);
   cuerpo.append(categoria);
+  if (producto.disponible) cuerpo.append(crearControles(producto));
 
   tarjeta.append(foto, cuerpo);
+  sincronizarControles(tarjeta);
   return tarjeta;
 }
 
@@ -137,6 +194,8 @@ export function crearTarjeta(producto) {
  * Muestra el filtro de categorías y la lista de productos. Tocar una categoría muestra solo
  * sus productos; "Todos" (la vista inicial) vuelve a mostrarlos todos.
  */
+let dejarDeEscuchar = null;
+
 export function mostrarCatalogo(contenedorFiltro, contenedorLista, productos) {
   const categorias = derivarCategorias(productos);
   let elegida = CLAVE_TODOS;
@@ -161,6 +220,12 @@ export function mostrarCatalogo(contenedorFiltro, contenedorLista, productos) {
     // Al volver a pintar se pierde el foco; se devuelve al botón tocado (útil con teclado).
     if (enfocar) botones[categorias.findIndex((c) => c.clave === elegida)]?.focus();
   }
+
+  // Cuando cambia el pedido, las tarjetas ya dibujadas ajustan sus controles sin volver a dibujarse.
+  dejarDeEscuchar?.();
+  dejarDeEscuchar = alCambiar((tipo) => {
+    if (tipo === "items") contenedorLista.querySelectorAll(".tarjeta").forEach(sincronizarControles);
+  });
 
   pintarFiltro();
   pintarLista();

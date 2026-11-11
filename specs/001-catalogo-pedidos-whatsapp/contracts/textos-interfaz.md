@@ -57,6 +57,29 @@ El enlace es `https://wa.me/<whatsapp de config.js>?text=` seguido de ese texto 
 | Confirmación de vaciar | `¿Seguro que quieres empezar un pedido nuevo? Se borrará el pedido actual.` |
 | **Aviso discreto** (sin almacenamiento en el celular) | `Tu pedido no se guardará si cierras esta página.` |
 
+### Etiquetas del resumen y del formulario
+
+| Elemento | Texto |
+|---|---|
+| Título del resumen | `Tu pedido` |
+| Campo de nombre | `Nombre` |
+| Grupo de modalidad | `Modalidad` |
+| Opción de modalidad | `Recojo` |
+| Opción de modalidad | `Delivery` |
+| Campo de dirección (solo con delivery) | `Dirección` |
+| Campo de referencia (solo con delivery) | `Referencia` |
+| Grupo de método de pago | `Método de pago` |
+| Campo de comentario | `Comentario` |
+
+### Nombres accesibles de los controles de cantidad
+
+Son nombres para lectores de pantalla (no se ven en pantalla); los botones muestran los símbolos `−` y `+`.
+
+| Botón | Nombre accesible |
+|---|---|
+| Bajar una unidad (`−`) | `Menos` |
+| Subir una unidad (`+`) | `Más` |
+
 ### Avisos de datos que faltan al enviar
 
 | Falta | Texto |
