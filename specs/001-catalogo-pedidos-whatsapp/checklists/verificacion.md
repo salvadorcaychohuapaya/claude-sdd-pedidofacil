@@ -68,8 +68,8 @@
 | Esc. 7: "Empezar un pedido nuevo" vacía el pedido | Cumple | 2026-11-11 · el usuario |  |
 | Esc. 8: producto agotado o eliminado se quita con aviso | Cumple | 2026-11-11 · el usuario |  |
 | Esc. 9: aviso (incluido cambio de precio) y segundo toque en "Enviar pedido" | Cumple | 2026-11-11 · el usuario |  |
-| Cierre de la página y reapertura | Pendiente | | |
-| Cantidades solo enteras de 1 a 99 | Pendiente | | |
+| Cierre de la página y reapertura | Cumple | 2026-11-11 · el usuario | Al recargar se conservan el pedido y el nombre. |
+| Cantidades solo enteras de 1 a 99 | Cumple | 2026-11-11 · el usuario | Verificado con node en T026–T031. En pantalla la cantidad solo se cambia con + y −. |
 | Método de pago deja de ser válido tras actualizar la hoja: se limpia la selección, hay aviso y se elige otro | Cumple | 2026-11-11 · el usuario | Paso 11. Con `metodos_pago` vacío solo se ofrece "A coordinar por WhatsApp". |
 | Control de sumas CE-006 (`0.10`, `0.20`, `19.99`, `12,50`) | Cumple | 2026-11-11 · el usuario | Con 0.10 + 0.20 + 19.99 + 12,50 el total en pantalla y en el mensaje es S/ 32.79. |
 | Prueba en celular real: WhatsApp abre con el mensaje correcto (Android / iPhone) | Cumple | 2026-11-11 · el usuario · iPhone 12 (Safari) y Redmi 15C (Chrome) | T036: WhatsApp abre con el mensaje correcto, con tildes, ñ y emojis. |
