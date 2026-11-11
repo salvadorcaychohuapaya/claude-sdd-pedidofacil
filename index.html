@@ -7,6 +7,28 @@
   <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
-  <!-- Única página: encabezado, catálogo, pedido y formulario. Se completa en las tareas de la Fase 3 en adelante. -->
+  <div class="contenedor">
+    <!-- Nombre y logo del negocio -->
+    <header id="encabezado"></header>
+
+    <!-- Avisos generales: estado del catálogo, errores y avisos de la revisión del pedido -->
+    <div id="aviso" role="status" aria-live="polite"></div>
+
+    <main>
+      <!-- Filtro de categorías ("Todos" primero) -->
+      <nav id="filtro-categorias" aria-label="Categorías"></nav>
+
+      <!-- Lista de productos -->
+      <section id="productos" aria-label="Productos"></section>
+
+      <!-- Resumen del pedido: productos, cantidades y total -->
+      <section id="resumen-pedido" aria-label="Pedido"></section>
+
+      <!-- Datos del cliente, método de pago y botón de envío -->
+      <section id="formulario" aria-label="Datos del pedido"></section>
+    </main>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
