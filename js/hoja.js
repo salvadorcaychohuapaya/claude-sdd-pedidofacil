@@ -1,5 +1,5 @@
 // Descarga y lectura de los CSV publicados de la hoja; validación de filas de productos y datos del negocio.
-import { normalizar } from "./formato.js";
+import { normalizar, textoACentimos } from "./formato.js";
 
 /** Tiempo máximo de espera por cada pestaña. */
 export const TIEMPO_ESPERA_MS = 8000;
@@ -71,7 +71,7 @@ export function leerFilas(texto, columnas) {
   const permitidas = columnas ? new Set(columnas.map(normalizar)) : null;
 
   return datos.map((celdas) => {
-    const objeto = {};
+    const objeto = Object.create(null);
     nombres.forEach((nombre, i) => {
       if (nombre === "" || nombre in objeto) return;
       if (permitidas && !permitidas.has(nombre)) return;
@@ -118,5 +118,105 @@ export async function descargarHoja(config) {
   return {
     productos: leerFilas(textoProductos),
     negocio: leerFilas(textoNegocio),
+  };
+}
+
+/* ---------- Interpretación de la pestaña "Productos" ---------- */
+
+/** Convierte el texto de la columna `orden` en número, o null si falta o no es un número. */
+function leerOrden(texto) {
+  const limpio = String(texto ?? "").trim().replace(",", ".");
+  if (limpio === "") return null;
+  const numero = Number(limpio);
+  return Number.isFinite(numero) ? numero : null;
+}
+
+/**
+ * Convierte las filas de la pestaña "Productos" (ya separadas por nombre de columna) en la
+ * lista de productos que se muestran, según data-model.md. Una fila inválida se omite con
+ * un aviso en la consola y no rompe el resto. Si no queda ningún producto válido devuelve
+ * una lista vacía (la pantalla muestra el estado "Sin productos").
+ *
+ * Cada producto: { id, nombre, descripcion, precioCentimos, categoria, foto, disponible,
+ * orden, posicion }. `categoria` queda vacía si la fila no la trae; `posicion` es el lugar
+ * de la fila en la hoja (para desempatar el orden).
+ */
+export function interpretarProductos(filas) {
+  const productos = [];
+  const idsVistos = new Set();
+
+  filas.forEach((fila, indice) => {
+    const numeroFila = indice + 2; // la fila 1 de la hoja son los encabezados
+    const nombre = String(fila.nombre ?? "").trim();
+    if (nombre === "") {
+      console.warn(`Fila ${numeroFila} de "Productos" omitida: falta el nombre.`);
+      return;
+    }
+
+    const precioCentimos = textoACentimos(fila.precio);
+    if (precioCentimos === null) {
+      console.warn(`Fila ${numeroFila} de "Productos" omitida ("${nombre}"): el precio no es válido.`);
+      return;
+    }
+
+    const id = String(fila.id ?? "").trim() || normalizar(nombre);
+    if (idsVistos.has(id)) {
+      console.warn(`Fila ${numeroFila} de "Productos" omitida ("${nombre}"): el id "${id}" está repetido.`);
+      return;
+    }
+    idsVistos.add(id);
+
+    const estado = normalizar(fila.disponible);
+    productos.push({
+      id,
+      nombre,
+      descripcion: String(fila.descripcion ?? "").trim(),
+      precioCentimos,
+      categoria: String(fila.categoria ?? "").trim(),
+      foto: String(fila.foto ?? "").trim(),
+      disponible: !(estado === "no" || estado === "agotado"),
+      orden: leerOrden(fila.orden),
+      posicion: indice,
+    });
+  });
+
+  return productos;
+}
+
+/* ---------- Interpretación de la pestaña "Negocio" ---------- */
+
+const METODOS_DE_PAGO = {
+  yape: "Yape",
+  plin: "Plin",
+  efectivo: "Efectivo",
+  transferencia: "Transferencia",
+};
+
+/**
+ * Convierte las filas de la pestaña "Negocio" (columnas `clave` y `valor`) en los datos del
+ * negocio: { nombre, logo, metodosPago, yape: {numero, titular}, plin: {numero, titular} }.
+ * `nombre` queda vacío si falta (quien lo muestra usa "Catálogo"). `metodosPago` solo
+ * conserva los valores reconocidos. Si una clave se repite vale la primera. El número de
+ * WhatsApp NUNCA se lee de la hoja: está en config.js.
+ */
+export function interpretarNegocio(filas) {
+  const datos = Object.create(null);
+  for (const fila of filas) {
+    const clave = normalizar(fila.clave);
+    if (clave !== "" && !(clave in datos)) datos[clave] = String(fila.valor ?? "").trim();
+  }
+
+  const metodosPago = [];
+  for (const parte of (datos.metodos_pago ?? "").split(",")) {
+    const metodo = METODOS_DE_PAGO[normalizar(parte)];
+    if (metodo && !metodosPago.includes(metodo)) metodosPago.push(metodo);
+  }
+
+  return {
+    nombre: datos.nombre ?? "",
+    logo: datos.logo ?? "",
+    metodosPago,
+    yape: { numero: datos.yape_numero ?? "", titular: datos.yape_titular ?? "" },
+    plin: { numero: datos.plin_numero ?? "", titular: datos.plin_titular ?? "" },
   };
 }

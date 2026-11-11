@@ -187,3 +187,195 @@ input[type="checkbox"] {
     transition: none !important;
   }
 }
+
+/* ---------- Historia 1: encabezado ---------- */
+#encabezado {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-4);
+}
+
+#encabezado:empty {
+  display: none;
+}
+
+.encabezado-logo {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radio);
+  object-fit: cover;
+  background: #eceff1;
+}
+
+.encabezado-nombre {
+  margin: 0;
+  min-width: 0;
+}
+
+/* ---------- Historia 1: filtro de categorías ---------- */
+#filtro-categorias {
+  display: flex;
+  flex-wrap: wrap; /* las categorías pasan a otra línea: nunca hay desplazamiento horizontal */
+  gap: var(--espacio-2);
+  margin-bottom: var(--espacio-4);
+}
+
+#filtro-categorias:empty {
+  display: none;
+}
+
+.filtro-boton {
+  background: var(--color-superficie);
+  color: var(--color-principal);
+  border-radius: 999px;
+}
+
+.filtro-boton:hover {
+  background: #eef6f0;
+}
+
+.filtro-boton[aria-pressed="true"] {
+  background: var(--color-principal);
+  color: var(--color-sobre-principal);
+}
+
+/* ---------- Historia 1: lista y tarjetas de producto ---------- */
+#productos {
+  display: grid;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-5);
+}
+
+.tarjeta {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--espacio-3);
+  padding: var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.tarjeta-foto {
+  width: 96px;
+  height: 96px;
+  aspect-ratio: 1 / 1; /* el espacio de la foto está reservado antes de que cargue */
+  border-radius: var(--radio);
+  object-fit: cover;
+  background: #eceff1;
+}
+
+.tarjeta-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-width: 0;
+}
+
+.tarjeta-nombre {
+  margin: 0;
+  font-size: var(--texto-base);
+}
+
+/* Descripción corta: máximo 2 líneas; si es más larga se corta con "…" */
+.tarjeta-descripcion {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  margin: 0;
+  overflow: hidden;
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+.tarjeta-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.tarjeta-precio {
+  font-weight: 700;
+}
+
+.tarjeta-categoria {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+.etiqueta-agotado {
+  padding: 2px var(--espacio-2);
+  border-radius: 999px;
+  background: #eceff1;
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+  font-weight: 600;
+}
+
+.tarjeta.agotado .tarjeta-foto,
+.tarjeta.agotado .tarjeta-nombre,
+.tarjeta.agotado .tarjeta-precio {
+  opacity: 0.55;
+}
+
+/* ---------- Historia 1: marcadores de carga ---------- */
+.estado-texto {
+  margin: 0;
+  color: var(--color-texto-suave);
+}
+
+.marcador {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--espacio-3);
+  padding: var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.marcador-foto,
+.marcador-lineas {
+  border-radius: var(--radio);
+  background: #e3e7ea;
+  animation: pulso 1.2s ease-in-out infinite;
+}
+
+.marcador-foto {
+  height: 96px;
+}
+
+.marcador-lineas {
+  height: 60px;
+}
+
+@keyframes pulso {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ---------- Historia 1: mensaje "Sin datos" y "Sin productos" ---------- */
+.mensaje {
+  padding: var(--espacio-5) var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  text-align: center;
+}
+
+.mensaje-texto {
+  font-size: var(--texto-base);
+}
+
+.mensaje-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espacio-3);
+}

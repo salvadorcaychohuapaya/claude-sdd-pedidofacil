@@ -26,25 +26,32 @@
 
 | Escenario / paso de quickstart | Estado | Fecha / quién / dispositivo | Notas |
 |---|---|---|---|
-| Esc. 1: productos con foto, nombre, descripción corta (máx. 2 líneas), precio y categoría | Pendiente | | |
-| Esc. 2: producto agotado sin forma de agregarlo | Pendiente | | |
-| Esc. 3: filtro por categoría y "Todos" | Pendiente | | |
-| Esc. 4: nombre y logo arriba | Pendiente | | |
-| RF-011: abrir sin iniciar sesión ni instalar nada | Pendiente | | |
-| Hoja sin productos válidos: "Por ahora no hay productos disponibles" con botón de WhatsApp | Pendiente | | |
-| Caracteres especiales (tildes, ñ, emoji) | Pendiente | | |
+| Esc. 1: productos con foto, nombre, descripción corta (máx. 2 líneas), precio y categoría | Cumple | 2026-11-11 · el usuario · Chrome, vista 360 px (Samsung Galaxy A55) | Foto, nombre, descripción, precio y categoría visibles. |
+| Esc. 2: producto agotado sin forma de agregarlo | Cumple | 2026-11-11 · el usuario · Chrome, vista 360 px (Samsung Galaxy A55) | Pollo entero y Gaseosa 500 ml muestran "Agotado", sin forma de agregarlos. |
+| Esc. 3: filtro por categoría y "Todos" | Cumple | 2026-11-11 · el usuario · Chrome, vista 360 px (Samsung Galaxy A55) | Pollos, Bebidas (3), Postres (1) y Otros (Mate de coca). Los filtros pasan a dos filas. |
+| Esc. 4: nombre y logo arriba | Cumple | 2026-11-11 · el usuario · Chrome, vista 360 px (Samsung Galaxy A55) | El logo apareció tras agregarlo en la clave `logo` de "Negocio". |
+| RF-011: abrir sin iniciar sesión ni instalar nada | Cumple | 2026-11-11 · el usuario · Chrome, vista 360 px (Samsung Galaxy A55) | Probado en ventana de incógnito, sin sesión ni instalación. |
+| Hoja sin productos válidos: "Por ahora no hay productos disponibles" con botón de WhatsApp | Cumple | 2026-11-11 · el usuario · Chrome, vista 360 px (Samsung Galaxy A55) | Aparece el mensaje con el botón "Escribir por WhatsApp"; los dos CSV se descargan con HTTP 200. Los precios se restauraron después. |
+| Caracteres especiales (tildes, ñ, emoji) | Cumple | 2026-11-11 · el usuario · Chrome, vista 360 px (Samsung Galaxy A55) | Piña, maracuyá, emoji y nombre con coma. |
 
 **Revisión de principios I–VII (Historia 1)**
 
 | Principio | Cumple | Nota |
 |---|---|---|
-| I. Costo cero | Pendiente | |
-| II. Primero el celular | Pendiente | |
-| III. Simplicidad | Pendiente | |
-| IV. El dueño no programa | Pendiente | |
-| V. Privacidad | Pendiente | |
-| VI. Español de Perú | Pendiente | |
-| VII. Entrega por historias | Pendiente | |
+| I. Costo cero | Cumple |  |
+| II. Primero el celular | Cumple | Sin desplazamiento horizontal a 360 px. |
+| III. Simplicidad | Cumple |  |
+| IV. El dueño no programa | Cumple |  |
+| V. Privacidad | Cumple |  |
+| VI. Español de Perú | Cumple |  |
+| VII. Entrega por historias | Cumple |  |
+
+**Observaciones (Historia 1)**
+
+- Ancho: a 360 px no hay desplazamiento horizontal.
+- Consola: solo el error de `favicon.ico` (inofensivo) y los avisos de filas omitidas durante la prueba de hoja sin productos.
+- Frescura: la página descarga la hoja en unos 1,2 s. El cambio en la hoja tardó varios minutos en reflejarse por la republicación de Google; no se midió con precisión. La medición formal queda para T042.
+- Problemas encontrados: ninguno.
 
 ---
 
