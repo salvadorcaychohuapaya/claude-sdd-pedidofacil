@@ -124,23 +124,23 @@
 
 | Escenario / paso de quickstart | Estado | Fecha / quién / dispositivo | Notas |
 |---|---|---|---|
-| Esc. 1: solo métodos aceptados por el negocio | Pendiente | | |
-| Esc. 2: Yape/Plin muestran número, titular e indicación de captura | Pendiente | | |
-| Esc. 3: Yape/Plin sin número o titular no aparecen | Pendiente | | |
-| Esc. 4: sin métodos válidos solo "A coordinar por WhatsApp" | Pendiente | | |
-| Línea de pago correcta en el mensaje de WhatsApp | Pendiente | | |
+| Esc. 1: solo métodos aceptados por el negocio | Cumple | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Se ofrecen Yape, Plin y Efectivo. La hoja se restauró después de las pruebas. |
+| Esc. 2: Yape/Plin muestran número, titular e indicación de captura | Cumple | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | El recuadro con número, titular e indicación de enviar la captura cambia al cambiar de método y desaparece con Efectivo. |
+| Esc. 3: Yape/Plin sin número o titular no aparecen | Cumple | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Yape sin titular no aparece. |
+| Esc. 4: sin métodos válidos solo "A coordinar por WhatsApp" | Cumple | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Sin métodos válidos solo se ofrece "A coordinar por WhatsApp". |
+| Línea de pago correcta en el mensaje de WhatsApp | Cumple | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Con Plin dice "*Pago:* Plin" y el recordatorio de la captura; con "A coordinar por WhatsApp" no hay recordatorio. |
 
 **Revisión de principios I–VII (Historia 4)**
 
 | Principio | Cumple | Nota |
 |---|---|---|
-| I. Costo cero | Pendiente | |
-| II. Primero el celular | Pendiente | |
-| III. Simplicidad | Pendiente | |
-| IV. El dueño no programa | Pendiente | |
-| V. Privacidad | Pendiente | |
-| VI. Español de Perú | Pendiente | |
-| VII. Entrega por historias | Pendiente | |
+| I. Costo cero | Cumple | |
+| II. Primero el celular | Cumple | |
+| III. Simplicidad | Cumple | |
+| IV. El dueño no programa | Cumple | |
+| V. Privacidad | Cumple | |
+| VI. Español de Perú | Cumple | |
+| VII. Entrega por historias | Cumple | |
 
 ---
 
