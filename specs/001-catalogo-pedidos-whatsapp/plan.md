@@ -101,7 +101,6 @@ img/
 └── generica.svg         # Imagen genérica para fotos que no cargan
 docs/
 └── guia-del-dueno.md    # Cómo editar la hoja (entregable de la historia 3)
-poc/                     # TEMPORAL: prueba de concepto (poc.html); se elimina en T052
 ```
 
 **Decisión de estructura**: sitio estático sin carpetas `src/` ni `tests/`; todas las rutas del HTML son relativas, para que el sitio funcione bajo `https://usuario.github.io/repositorio/` y en cualquier otro hosting estático. Las pruebas son manuales y están descritas en [quickstart.md](quickstart.md).

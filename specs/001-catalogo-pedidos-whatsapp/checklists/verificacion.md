@@ -149,10 +149,16 @@
 | Criterio | Medida | Resultado | Estado | Fecha / quién |
 |---|---|---|---|---|
 | CE-001 | Pedido de 3 productos en menos de 2 minutos (cliente nuevo) | | Pendiente | |
-| CE-002 | Sin desplazamiento horizontal a 360 px y áreas táctiles de al menos 44×44 px | | Pendiente | |
-| CE-003 | Productos visibles en menos de 3 s con 4G y caché vacía | | Pendiente | |
+| CE-002 | Sin desplazamiento horizontal a 360 px y áreas táctiles de al menos 44×44 px | Revisión de código (T049): todos los botones, campos y opciones tienen al menos 44 px de alto (`--area-tactil`); campos de 1 rem (16 px); los textos largos se parten y las categorías y botones pasan a otra línea, sin desplazamiento horizontal. Falta la medición final en el dispositivo (T054). | Cumple (código) | 2026-11-11 / revisión de código (Claude) |
+| CE-003 | Productos visibles en menos de 3 s con 4G y caché vacía | Peso (T051): HTML + CSS + JS = 74 780 bytes (73 KiB) sin comprimir, **por encima de 60 KB**; unos 25 KB comprimidos. Fotos con carga diferida; sin librerías. La medición con 4G es de T054. | Pendiente | 2026-11-11 / revisión de código (Claude) |
 | CE-004 | Cambiar un precio sin ayuda en menos de 1 minuto | | Pendiente | Sin cronometrar: la guía fue revisada por el instalador el 2026-11-11; se medirá con el primer dueño real. |
-| CE-005 | Costo mensual de operación: S/ 0 | | Pendiente | |
+| CE-005 | Costo mensual de operación: S/ 0 | Revisión de código (T050): sin costo ni servicios de pago. Falta confirmarlo con el sitio publicado. | Cumple (código) | 2026-11-11 / revisión de código (Claude) |
 | CE-006 | 0 errores de suma en el mensaje de pedido | | Pendiente | |
+
+**Revisiones de código de la Fase 8 (2026-11-11)**
+
+- **T049 (diseño a 360 px):** botones, campos, filtros y opciones con mínimo de 44 px; textos base de 1 rem; sin anchos fijos que pasen de 360 px (tarjetas con columnas `96px` + `minmax(0, 1fr)`); todo el texto visible sale de `contracts/textos-interfaz.md` y los precios con `S/`. Sin hallazgos.
+- **T050 (privacidad y costo):** la única llamada de red del código es `fetch` a las dos hojas publicadas (`hoja.js`); las demás solicitudes son las fotos y el logo de Drive (con `referrerpolicy="no-referrer"`) y el enlace `wa.me` al enviar. No hay analíticas, cookies, fuentes ni scripts externos, ni servidor propio. En el celular solo se guarda el pedido y la copia del catálogo (localStorage). `config.js` solo tiene el número del negocio y los dos enlaces CSV, que son públicos. Hallazgo menor: los comentarios de `config.js` aún dicen que los valores son de ejemplo, aunque ya son los reales.
+- **T051 (peso):** `index.html` 1 086 B, `css/estilos.css` 10 789 B, `js/*.js` 62 905 B (total 74 780 B); `img/generica.svg` 342 B; sin librerías. Supera en unos 14 KB el máximo de 60 KB de T051: queda por decidir si se recorta el código o se sube el máximo.
 
 **Verificación final sobre el sitio publicado (T056)**: _pendiente_
