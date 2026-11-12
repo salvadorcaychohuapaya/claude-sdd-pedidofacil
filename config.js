@@ -1,10 +1,11 @@
-// Configuración del catálogo (la edita quien instala el sitio, no el dueño). Todo lo que hay aquí es público.
-// IMPORTANTE: los valores de abajo son de EJEMPLO. Reemplázalos por los reales antes de usar el catálogo (T011).
+// Configuración del catálogo. La edita quien instala el sitio, no el dueño.
+// IMPORTANTE: todo lo que hay en este archivo es público (cualquiera puede verlo en el sitio publicado).
+// No escribas aquí claves, contraseñas ni datos privados.
 export const CONFIG = {
-  // EJEMPLO: número de WhatsApp del negocio, solo dígitos y con 51 al inicio (sin +, espacios ni guiones).
+  // Número de WhatsApp del negocio, donde llegan los pedidos: solo dígitos y con 51 al inicio (sin +, espacios ni guiones).
   whatsapp: "51968731450",
-  // EJEMPLO: enlace CSV publicado de la pestaña "Productos".
+  // Enlace CSV publicado de la pestaña "Productos" de la hoja de Google Sheets (Archivo → Compartir → Publicar en la web).
   hojaProductosCsv: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQliJSesXUql0R_BYob3pucPlRhNo7k0StG7WGbb2zh-aB1MJ4UhyyrHAuCZMDOAJ7SCPeFzXPBNmJQ/pub?gid=0&single=true&output=csv",
-  // EJEMPLO: enlace CSV publicado de la pestaña "Negocio".
+  // Enlace CSV publicado de la pestaña "Negocio" (nombre, logo y métodos de pago).
   hojaNegocioCsv: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQliJSesXUql0R_BYob3pucPlRhNo7k0StG7WGbb2zh-aB1MJ4UhyyrHAuCZMDOAJ7SCPeFzXPBNmJQ/pub?gid=1456639122&single=true&output=csv",
 };

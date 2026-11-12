@@ -54,7 +54,3 @@ Todas las rutas del sitio son relativas, por eso funciona bajo `https://<usuario
 - [Guía del dueño](docs/guia-del-dueno.md): cómo actualizar el catálogo desde la hoja.
 - [Especificación y plan](specs/001-catalogo-pedidos-whatsapp/): `spec.md`, `plan.md`, `tasks.md` y los contratos.
 - [Registro de verificación](specs/001-catalogo-pedidos-whatsapp/checklists/verificacion.md).
-
-## Licencia
-
-MIT. Ver [LICENSE](LICENSE).

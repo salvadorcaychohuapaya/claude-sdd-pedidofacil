@@ -26,7 +26,7 @@ Enfoque técnico (de `docs/decisiones-tecnicas.md`): HTML, CSS y JavaScript puro
 
 **Tipo de proyecto**: sitio web estático de una sola página (solo frontend).
 
-**Metas de rendimiento**: primera carga con productos visibles en menos de 3 s con 4G (CE-003). Presupuesto: HTML + CSS + JS ≤ 60 KB sin comprimir; fotos pedidas a ancho reducido (≈ 400 px) y con carga diferida. Medida de CE-002: sin desplazamiento horizontal a 360 px y áreas táctiles de al menos 44×44 px.
+**Metas de rendimiento**: primera carga con productos visibles en menos de 3 s con 4G (CE-003). Presupuesto: HTML + CSS + JS ≤ 60 KB transferidos (comprimidos con gzip, como los sirve GitHub Pages; decisión del 2026-11-11); fotos pedidas a ancho reducido (≈ 400 px) y con carga diferida. Medida de CE-002: sin desplazamiento horizontal a 360 px y áreas táctiles de al menos 44×44 px.
 
 **Restricciones**: costo S/ 0 (CE-005); sin datos de clientes en servidores; funcionar con conexión lenta o sin conexión (modo copia guardada, RF-013); todo en español de Perú; sin dependencias de funciones exclusivas de GitHub, para poder mudar el sitio a otro hosting estático gratuito.
 
