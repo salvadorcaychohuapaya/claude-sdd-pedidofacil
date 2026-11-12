@@ -80,7 +80,7 @@ Como dueño, quiero agregar productos y cambiar precios, fotos y disponibilidad 
 
 **Escenarios de aceptación**:
 
-1. **Dado** que cambio un precio en la hoja, **cuando** un cliente recarga el catálogo, **entonces** ve el precio nuevo en un máximo de 5 minutos.
+1. **Dado** que cambio un precio en la hoja, **cuando** un cliente recarga el catálogo, **entonces** ve el precio nuevo de forma estable en un máximo de 10 minutos.
 2. **Dado** que agrego una fila con un producto nuevo, **cuando** se recarga el catálogo, **entonces** el producto aparece en su categoría.
 3. **Dado** que dejo vacía una celda obligatoria (nombre o precio), **cuando** se carga el catálogo, **entonces** ese producto no se muestra y el resto sigue funcionando.
 4. **Dado** que ya abrí el catálogo antes en este celular y ahora no hay conexión o la hoja no responde, **cuando** abro el enlace, **entonces** veo la última versión guardada con el aviso "Mostrando datos guardados, pueden estar desactualizados", no puedo enviar el pedido y sigo viendo el botón para escribir directo al WhatsApp del negocio.
@@ -161,7 +161,7 @@ Como cliente, quiero saber cómo puedo pagar (Yape, Plin, efectivo o transferenc
 - Los pagos y el costo del delivery se coordinan por WhatsApp; el sistema no procesa pagos.
 - Un catálogo típico tiene menos de 200 productos.
 - La versión 1 se prepara para un solo negocio a la vez.
-- El máximo de 5 minutos para ver un cambio de la hoja depende del retraso de publicación de Google. Si la medición real lo supera, se ajusta la especificación al valor medido y se informa en la guía del dueño; no se agrega ningún servidor.
+- El máximo de 10 minutos para ver un cambio de la hoja de forma estable depende del retraso de publicación de Google. Medido el 2026-11-11 (T042): el valor nuevo aparece por primera vez en segundos, pero durante la transición alterna con el anterior porque Google sirve el CSV desde varias copias; la estabilización tardó unos 5 min 30 s y unos 2 min en dos mediciones de precio, y un cambio de `metodos_pago` tardó más de 5 minutos. Por eso el máximo se fijó en 10 minutos y se informa en la guía del dueño; no se agrega ningún servidor.
 
 ## Fuera de alcance (versión 1)
 

@@ -6,7 +6,8 @@ Esta guía es para ti, dueño o dueña del negocio. No necesitas saber programar
 
 - Tu hoja tiene **dos pestañas**, y se llaman exactamente **Productos** y **Negocio**. No les cambies el nombre.
 - La primera fila de cada pestaña tiene los títulos de las columnas (`id`, `nombre`, `precio`…). **No los cambies ni los borres.**
-- Los cambios **no se ven al instante**: Google tarda unos minutos en publicarlos (normalmente menos de 5). Después de editar, espera un rato y recarga el catálogo.
+- Los cambios **no se ven al instante**: Google puede tardar **hasta unos 10 minutos** en mostrarlos a todos. Durante ese tiempo, algunos clientes pueden seguir viendo el valor anterior (a veces se alterna entre el nuevo y el anterior). Después de editar, espera y recarga el catálogo.
+- Conviene **no cambiar precios en las horas de más pedidos**, para que ningún cliente vea un precio distinto del que acabas de poner.
 - No tienes que guardar nada: Google Sheets guarda solo.
 
 ## Pestaña "Productos"
@@ -28,7 +29,7 @@ Cada **fila es un producto**. Si un producto viene en varios tamaños (por ejemp
 
 1. Abre la pestaña **Productos**.
 2. Busca el producto y cambia el número de la columna `precio`.
-3. Espera unos minutos y recarga el catálogo.
+3. Espera hasta unos 10 minutos y recarga el catálogo.
 
 ### Agregar un producto
 
@@ -80,7 +81,7 @@ Si en `metodos_pago` no pones ningún método válido, tus clientes solo verán 
 
 ## Cuando algo no se ve como esperabas
 
-- **Cambié algo y no aparece:** espera unos minutos más y recarga la página. Google tarda en publicar los cambios.
+- **Cambié algo y no aparece:** espera hasta unos 10 minutos y recarga la página. Google tarda en publicar los cambios.
 - **Un producto no aparece:** revisa que tenga `nombre` y un `precio` que sea solo un número mayor que cero.
 - **Un producto aparece con la imagen genérica:** el enlace de la foto está vacío, es de una carpeta o la foto no está compartida con "Cualquier persona con el enlace".
 - **Mis clientes ven el aviso "Mostrando datos guardados, pueden estar desactualizados":** significa que su celular no pudo conectarse para traer los datos nuevos y está mostrando lo último que guardó. Mientras tanto no pueden enviar el pedido, pero sí pueden escribirte por WhatsApp.

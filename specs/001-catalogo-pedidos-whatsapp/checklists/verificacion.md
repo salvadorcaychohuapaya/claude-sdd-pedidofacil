@@ -97,7 +97,7 @@
 
 | Escenario / paso de quickstart | Estado | Fecha / quién / dispositivo | Notas |
 |---|---|---|---|
-| Esc. 1: precio nuevo visible en un máximo de 5 minutos (tiempo medido: ___ min) | Pendiente | | Si supera 5 minutos: ajustar spec y guía del dueño |
+| Esc. 1: precio nuevo visible de forma estable en un máximo de 10 minutos (tiempo medido: 5 min 30 s y 2 min) | Cumple | 2026-11-11 / manual, recargando el catálogo | El valor nuevo aparece por primera vez en segundos, pero alterna con el anterior durante la transición porque Google sirve el CSV desde varias copias. Medición 1 (arroz-leche 6.00 → 6.80): unos 5 min 30 s hasta verse estable; medición 2 (6.80 → 5.80): unos 2 min. Antes, un cambio de `metodos_pago` tardó más de 5 minutos. Superó los 5 minutos: spec, quickstart, research y guía del dueño ajustados a 10 minutos (T042). |
 | Esc. 2: producto nuevo aparece en su categoría | Pendiente | | |
 | Esc. 3: fila con nombre o precio vacío no se muestra | Pendiente | | |
 | Esc. 4: sin conexión, con copia guardada: aviso, envío bloqueado, botón de WhatsApp visible | Pendiente | | |

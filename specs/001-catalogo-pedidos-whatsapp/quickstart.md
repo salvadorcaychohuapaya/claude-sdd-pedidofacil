@@ -73,7 +73,7 @@ Abrir la página y comprobar en la consola del navegador que ambas pestañas se 
 
 | # | Paso | Resultado esperado |
 |---|------|--------------------|
-| 1 | Cambiar un precio en la hoja y recargar el catálogo | El precio nuevo aparece en un máximo de 5 minutos. Si la medición supera 5 minutos, se ajusta la spec al valor medido y se informa en la guía del dueño. |
+| 1 | Cambiar un precio en la hoja y recargar el catálogo | El precio nuevo se ve de forma estable en un máximo de 10 minutos (medido el 2026-11-11: el valor nuevo aparece en segundos, pero alterna con el anterior hasta unos 5 min 30 s). Este valor se informa en la guía del dueño. |
 | 2 | Agregar una fila con producto nuevo | Aparece en su categoría. |
 | 3 | Dejar vacío el nombre o el precio de una fila | Esa fila no se muestra; el resto funciona. |
 | 4 | Poner una foto inexistente | Se ve la imagen genérica. |
