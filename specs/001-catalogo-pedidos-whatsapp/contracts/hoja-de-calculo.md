@@ -52,4 +52,4 @@ El **número de WhatsApp del negocio no va en la hoja**: está en `config.js` (d
 
 ## Frescura
 
-El dueño edita la hoja y el cambio debe verse en el catálogo en **un máximo de 5 minutos** (Historia 3). El retraso depende de la publicación de Google; ver [research.md](../research.md), sección 2. Si la medición real supera 5 minutos, se ajusta la especificación al valor medido y se informa en la guía del dueño (sin agregar servidor).
+El dueño edita la hoja y el cambio debe verse en el catálogo **de forma estable en un máximo de 10 minutos** (Historia 3). El valor nuevo puede aparecer en segundos, pero durante la transición puede alternar con el anterior porque Google sirve el CSV desde varias copias. El retraso depende de la publicación de Google; ver [research.md](../research.md), sección 2 (medición del 2026-11-11). El valor se informa en la guía del dueño (sin agregar servidor).
