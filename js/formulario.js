@@ -105,11 +105,13 @@ let dejarDeEscucharEnviado = null;
  * delivery, método de pago y comentario), el botón "Enviar pedido" y "Empezar un pedido nuevo".
  * Cada cambio se guarda en el pedido (pedido.js).
  * Opciones: `alEnviar` (función, puede ser asíncrona) se llama al tocar "Enviar pedido";
- * `alVaciar` se llama después de vaciar el pedido; `envioHabilitado` en false deja el botón
- * de envío desactivado (número de WhatsApp mal configurado).
+ * `alVaciar` se llama después de vaciar el pedido; `puedeEnviar` (función) dice si el botón de
+ * envío está activo (se desactiva con el número de WhatsApp mal configurado o con datos no vigentes).
+ * El botón tiene la clase `boton-enviar`: quien cambie lo que `puedeEnviar` responde debe
+ * actualizar su atributo `disabled`.
  */
 export function montarFormulario(contenedor, negocio, opciones = {}) {
-  const { alEnviar, alVaciar, envioHabilitado = true } = opciones;
+  const { alEnviar, alVaciar, puedeEnviar = () => true } = opciones;
   const cliente = obtenerPedido().cliente;
 
   const nombre = document.createElement("input");
@@ -170,7 +172,7 @@ export function montarFormulario(contenedor, negocio, opciones = {}) {
 
   const botonEnviar = crear("button", "boton-enviar", BOTONES.enviar);
   botonEnviar.type = "button";
-  botonEnviar.disabled = !envioHabilitado;
+  botonEnviar.disabled = !puedeEnviar();
   let ocupado = false;
   botonEnviar.addEventListener("click", async () => {
     if (ocupado || !alEnviar) return;
@@ -180,7 +182,7 @@ export function montarFormulario(contenedor, negocio, opciones = {}) {
       await alEnviar();
     } finally {
       ocupado = false;
-      botonEnviar.disabled = !envioHabilitado;
+      botonEnviar.disabled = !puedeEnviar();
     }
   });
 

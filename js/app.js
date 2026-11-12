@@ -1,6 +1,6 @@
 // Arranque de la página, estados de pantalla (cargando, vigente, copia guardada, sin datos) y eventos.
 import { CONFIG } from "../config.js";
-import { descargarHoja, interpretarNegocio, interpretarProductos } from "./hoja.js";
+import { cargarCatalogo, recuperarCopiaCatalogo } from "./hoja.js";
 import { mostrarCatalogo } from "./catalogo.js";
 import { centimosATexto, IMAGEN_GENERICA, urlFoto } from "./formato.js";
 import { almacenamientoPersistente } from "./almacenamiento.js";
@@ -12,6 +12,8 @@ import { construirMensaje, enlaceWhatsApp, NOTA_DELIVERY } from "./mensaje.js";
 const TEXTOS = {
   cargando: "Cargando el catálogo…",
   mensajeAmable: "No pudimos cargar el catálogo en este momento. Escríbenos por WhatsApp y te atendemos.",
+  actualizando: "Actualizando precios…",
+  copiaGuardada: "Mostrando datos guardados, pueden estar desactualizados",
   sinProductos: "Por ahora no hay productos disponibles",
   numeroMal: "No se pueden enviar pedidos por ahora. Avisa al negocio.",
   botonWhatsApp: "Escribir por WhatsApp",
@@ -50,6 +52,13 @@ let avisosAlAbrir = [];
 let avisosEnvio = [];
 let envioConBotonWhatsApp = false;
 
+/**
+ * Estado del catálogo que se ve: null = vigente (o aún sin catálogo), "actualizando" = se ve la copia
+ * guardada mientras se descarga la hoja, "copia" = la descarga falló y se ve la copia guardada.
+ * En "actualizando" y en "copia" no se puede enviar el pedido.
+ */
+let estadoCatalogo = null;
+
 /** El número de WhatsApp de config.js: solo dígitos y con el código de país 51. */
 const numeroValido = /^51[0-9]+$/.test(String(CONFIG.whatsapp ?? ""));
 
@@ -69,23 +78,40 @@ function crearBotonWhatsApp() {
 
 /* ---------- Avisos ---------- */
 
-function rellenarAvisos(caja, textos, conBotonWhatsApp = false) {
+function rellenarAvisos(caja, textos, botones = []) {
   const partes = textos.map((texto) => crear("p", undefined, texto));
-  if (conBotonWhatsApp && numeroValido) partes.push(crearBotonWhatsApp());
+  if (botones.length > 0) {
+    const fila = crear("div", "mensaje-botones");
+    fila.append(...botones);
+    partes.push(fila);
+  }
   caja.replaceChildren(...partes);
+}
+
+/** Botones de "Copia guardada": escribir directo al negocio y reintentar la descarga. */
+function botonesDeCopia() {
+  const reintentar = crear("button", "boton-secundario", TEXTOS.botonReintentar);
+  reintentar.type = "button";
+  reintentar.addEventListener("click", arrancar);
+  return numeroValido ? [crearBotonWhatsApp(), reintentar] : [reintentar];
 }
 
 /** Dibuja los avisos. Los del envío van junto al botón; si el formulario no está en pantalla, van arriba. */
 function pintarAvisos() {
   const arriba = [];
   if (!numeroValido) arriba.push(TEXTOS.numeroMal);
+  if (estadoCatalogo === "actualizando") arriba.push(TEXTOS.actualizando);
+  if (estadoCatalogo === "copia") arriba.push(TEXTOS.copiaGuardada);
   arriba.push(...avisosAlAbrir);
+  const botonesArriba = estadoCatalogo === "copia" ? botonesDeCopia() : [];
+  const botonesEnvio = envioConBotonWhatsApp && numeroValido ? [crearBotonWhatsApp()] : [];
+
   const cajaEnvio = el.formulario.querySelector(".avisos-envio");
   if (cajaEnvio) {
-    rellenarAvisos(cajaEnvio, avisosEnvio, envioConBotonWhatsApp);
-    rellenarAvisos(el.aviso, arriba);
+    rellenarAvisos(cajaEnvio, avisosEnvio, botonesEnvio);
+    rellenarAvisos(el.aviso, arriba, botonesArriba);
   } else {
-    rellenarAvisos(el.aviso, [...arriba, ...avisosEnvio], envioConBotonWhatsApp);
+    rellenarAvisos(el.aviso, [...arriba, ...avisosEnvio], [...botonesArriba, ...(botonesArriba.length ? [] : botonesEnvio)]);
   }
 }
 
@@ -226,6 +252,17 @@ function pintarResumen() {
 
 /* ---------- Pantalla vigente ---------- */
 
+/** El envío solo se puede con el número bien configurado y con datos vigentes (no con la copia guardada). */
+function puedeEnviar() {
+  return numeroValido && estadoCatalogo === null;
+}
+
+/** Activa o desactiva el botón "Enviar pedido" sin volver a dibujar la pantalla. */
+function sincronizarEnvio() {
+  const boton = el.formulario.querySelector(".boton-enviar");
+  if (boton) boton.disabled = !puedeEnviar();
+}
+
 /** Muestra el encabezado y, si hay productos, el catálogo, el formulario y el resumen; si no, "Sin productos". */
 function mostrarHoja(productos, negocio) {
   mostrarEncabezado(negocio);
@@ -245,7 +282,7 @@ function mostrarHoja(productos, negocio) {
       avisosAlAbrir = [];
       mostrarAvisosEnvio([]);
     },
-    envioHabilitado: numeroValido,
+    puedeEnviar,
   });
   pintarResumen();
   dejarDeEscucharPedido = alCambiar((tipo) => {
@@ -274,17 +311,19 @@ async function enviarPedido() {
   }
   mostrarAvisosEnvio([]);
 
-  let hoja;
+  let datos;
   try {
-    hoja = await descargarHoja(CONFIG);
+    datos = await cargarCatalogo(CONFIG);
   } catch (error) {
     console.error("No se pudo confirmar la hoja antes de enviar:", error);
-    mostrarAvisosEnvio([TEXTOS.envioBloqueado], true); // envío bloqueado + botón para escribir directo
+    // Pasa al estado "Copia guardada": se bloquea el envío y quedan "Escribir por WhatsApp" y "Reintentar".
+    estadoCatalogo = "copia";
+    sincronizarEnvio();
+    mostrarAvisosEnvio([TEXTOS.envioBloqueado], true);
     return;
   }
 
-  const negocio = interpretarNegocio(hoja.negocio);
-  const productos = interpretarProductos(hoja.productos);
+  const { negocio, productos } = datos;
   if (productos.length === 0) {
     avisosAlAbrir = [];
     mostrarHoja(productos, negocio); // Sin productos
@@ -313,25 +352,42 @@ async function arrancar() {
   avisosAlAbrir = [];
   avisosEnvio = [];
   envioConBotonWhatsApp = false;
-  mostrarCargando();
 
-  let hoja;
+  // Con copia guardada se ve el catálogo mientras se actualiza; sin copia, marcadores de carga.
+  const copia = recuperarCopiaCatalogo();
+  if (copia) {
+    estadoCatalogo = "actualizando";
+    mostrarHoja(copia.productos, copia.negocio);
+  } else {
+    estadoCatalogo = null;
+    mostrarCargando();
+  }
+  pintarAvisos();
+
+  let datos;
   try {
-    hoja = await descargarHoja(CONFIG);
+    datos = await cargarCatalogo(CONFIG);
   } catch (error) {
     console.error("No se pudo descargar la hoja:", error);
-    mostrarEncabezado({ nombre: "", logo: "" }); // sin datos del negocio: "Catálogo"
-    mostrarMensaje(TEXTOS.mensajeAmable, true); // Sin datos
+    if (copia) {
+      estadoCatalogo = "copia"; // Copia guardada: se sigue viendo la copia, sin poder enviar
+      sincronizarEnvio();
+    } else {
+      mostrarEncabezado({ nombre: "", logo: "" }); // sin datos del negocio: "Catálogo"
+      mostrarMensaje(TEXTOS.mensajeAmable, true); // Sin datos
+    }
     pintarAvisos();
     return;
   }
 
-  const negocio = interpretarNegocio(hoja.negocio);
-  const productos = interpretarProductos(hoja.productos);
+  estadoCatalogo = null;
+  const { negocio, productos } = datos;
 
   // Revisión del pedido guardado contra el catálogo vigente (si no hay productos válidos no se toca el pedido).
+  // El precio y el nombre anteriores salen del último catálogo visto o, al abrir la página, de la copia guardada.
   if (productos.length > 0) {
-    avisosAlAbrir = revisarPedido(productos, { anterior: ultimoCatalogo, metodos: metodosDisponibles(negocio) }).avisos;
+    const anterior = ultimoCatalogo ?? copia?.productos ?? null;
+    avisosAlAbrir = revisarPedido(productos, { anterior, metodos: metodosDisponibles(negocio) }).avisos;
     ultimoCatalogo = productos;
   }
   mostrarHoja(productos, negocio);

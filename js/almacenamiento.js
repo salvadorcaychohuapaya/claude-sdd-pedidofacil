@@ -78,3 +78,15 @@ export function borrar(clave) {
     }
   }
 }
+
+/* ---------- Copia del catálogo (pedidofacil:catalogo:v1) ---------- */
+
+/** Guarda la copia del catálogo `{ guardadoEn, negocio, productos }`. Devuelve true si quedó en localStorage. */
+export function guardarCopiaCatalogo(copia) {
+  return escribir(CLAVES.catalogo, copia);
+}
+
+/** Lee la copia guardada tal como se escribió (null si no hay). La valida quien la usa (hoja.js). */
+export function leerCopiaCatalogo() {
+  return leer(CLAVES.catalogo);
+}

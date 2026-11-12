@@ -1,5 +1,6 @@
 // Descarga y lectura de los CSV publicados de la hoja; validación de filas de productos y datos del negocio.
 import { normalizar, textoACentimos } from "./formato.js";
+import { guardarCopiaCatalogo, leerCopiaCatalogo } from "./almacenamiento.js";
 
 /** Tiempo máximo de espera por cada pestaña. */
 export const TIEMPO_ESPERA_MS = 8000;
@@ -106,15 +107,37 @@ export async function descargarCsv(url, tiempoMs = TIEMPO_ESPERA_MS) {
 }
 
 /**
+ * Comprueba que el texto descargado sea de verdad el CSV de la pestaña: que no sea una página web
+ * (Google responde con HTML si la pestaña no está publicada) y que tenga los encabezados que la
+ * pestaña necesita. Si no, lanza un Error que explica el motivo (queda en la consola).
+ */
+function verificarPestana(texto, pestana, columnasRequeridas) {
+  if (/^s*<(!doctype|html)/i.test(String(texto ?? ""))) {
+    throw new Error(`La pestaña "${pestana}" devolvió una página web en lugar de un CSV (¿está publicada como CSV?).`);
+  }
+  const encabezados = parsearCsv(texto)[0];
+  if (!encabezados) throw new Error(`La pestaña "${pestana}" está vacía (falta la fila de encabezados).`);
+  const presentes = new Set(encabezados.map(normalizar));
+  const faltan = columnasRequeridas.filter((columna) => !presentes.has(columna));
+  if (faltan.length > 0) {
+    throw new Error(`A la pestaña "${pestana}" le faltan los encabezados: ${faltan.join(", ")}.`);
+  }
+}
+
+/**
  * Descarga en paralelo las pestañas "Productos" y "Negocio" y devuelve sus filas crudas
- * por nombre de columna: `{ productos: [...], negocio: [...] }`. Si cualquiera falla,
- * lanza el error (quien llama decide si usa la copia guardada).
+ * por nombre de columna: `{ productos: [...], negocio: [...] }`. Si cualquiera falla, no se puede
+ * descargar o no tiene la forma esperada (no es CSV o faltan los encabezados `nombre`/`precio` o
+ * `clave`/`valor`), lanza el error: quien llama decide si usa la copia guardada. Las filas
+ * inválidas no son un error: se omiten después, una por una, con aviso en la consola.
  */
 export async function descargarHoja(config) {
   const [textoProductos, textoNegocio] = await Promise.all([
     descargarCsv(config.hojaProductosCsv),
     descargarCsv(config.hojaNegocioCsv),
   ]);
+  verificarPestana(textoProductos, "Productos", ["nombre", "precio"]);
+  verificarPestana(textoNegocio, "Negocio", ["clave", "valor"]);
   return {
     productos: leerFilas(textoProductos),
     negocio: leerFilas(textoNegocio),
@@ -218,5 +241,68 @@ export function interpretarNegocio(filas) {
     metodosPago,
     yape: { numero: datos.yape_numero ?? "", titular: datos.yape_titular ?? "" },
     plin: { numero: datos.plin_numero ?? "", titular: datos.plin_titular ?? "" },
+  };
+}
+
+/* ---------- Catálogo completo y copia guardada ---------- */
+
+/**
+ * Descarga la hoja y la interpreta: devuelve `{ negocio, productos }`. Cuando la descarga y la
+ * lectura terminan bien y hay al menos un producto válido, guarda la copia del catálogo en el
+ * celular (`{ guardadoEn, negocio, productos }`). Si falla, lanza el error y la copia anterior
+ * queda intacta; una hoja sin productos válidos tampoco la reemplaza.
+ */
+export async function cargarCatalogo(config) {
+  const hoja = await descargarHoja(config);
+  const negocio = interpretarNegocio(hoja.negocio);
+  const productos = interpretarProductos(hoja.productos);
+  if (productos.length > 0) {
+    guardarCopiaCatalogo({ guardadoEn: new Date().toISOString(), negocio, productos });
+  }
+  return { negocio, productos };
+}
+
+const texto = (valor) => (typeof valor === "string" ? valor : "");
+
+/**
+ * Recupera la copia guardada del catálogo, ya revisada: devuelve `{ guardadoEn, negocio, productos }`
+ * o null si no hay copia, está dañada o no tiene ningún producto utilizable. Los productos que no
+ * tengan la forma esperada se descartan.
+ */
+export function recuperarCopiaCatalogo() {
+  const copia = leerCopiaCatalogo();
+  if (!copia || typeof copia !== "object" || !Array.isArray(copia.productos)) return null;
+
+  const productos = [];
+  copia.productos.forEach((p, indice) => {
+    if (!p || typeof p !== "object") return;
+    if (texto(p.id) === "" || texto(p.nombre) === "") return;
+    if (!Number.isInteger(p.precioCentimos) || p.precioCentimos <= 0) return;
+    productos.push({
+      id: p.id,
+      nombre: p.nombre,
+      descripcion: texto(p.descripcion),
+      precioCentimos: p.precioCentimos,
+      categoria: texto(p.categoria),
+      foto: texto(p.foto),
+      disponible: p.disponible !== false,
+      orden: Number.isFinite(p.orden) ? p.orden : null,
+      posicion: Number.isInteger(p.posicion) ? p.posicion : indice,
+    });
+  });
+  if (productos.length === 0) return null;
+
+  const n = copia.negocio && typeof copia.negocio === "object" ? copia.negocio : {};
+  const contacto = (c) => ({ numero: texto(c?.numero), titular: texto(c?.titular) });
+  return {
+    guardadoEn: texto(copia.guardadoEn),
+    negocio: {
+      nombre: texto(n.nombre),
+      logo: texto(n.logo),
+      metodosPago: Array.isArray(n.metodosPago) ? n.metodosPago.filter((m) => typeof m === "string") : [],
+      yape: contacto(n.yape),
+      plin: contacto(n.plin),
+    },
+    productos,
   };
 }
