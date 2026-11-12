@@ -1,0 +1,39 @@
+# Publica en GitHub Pages solo la carpeta app/ (el código del sitio).
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Una sola publicación a la vez; si llega otra, se cancela la que está en curso.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir la carpeta app/
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: app
+
+      - name: Publicar
+        id: despliegue
+        uses: actions/deploy-pages@v4
