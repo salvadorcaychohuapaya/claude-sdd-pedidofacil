@@ -98,25 +98,25 @@
 | Escenario / paso de quickstart | Estado | Fecha / quién / dispositivo | Notas |
 |---|---|---|---|
 | Esc. 1: precio nuevo visible de forma estable en un máximo de 10 minutos (tiempo medido: 5 min 30 s y 2 min) | Cumple | 2026-11-11 / manual, recargando el catálogo | El valor nuevo aparece por primera vez en segundos, pero alterna con el anterior durante la transición porque Google sirve el CSV desde varias copias. Medición 1 (arroz-leche 6.00 → 6.80): unos 5 min 30 s hasta verse estable; medición 2 (6.80 → 5.80): unos 2 min. Antes, un cambio de `metodos_pago` tardó más de 5 minutos. Superó los 5 minutos: spec, quickstart, research y guía del dueño ajustados a 10 minutos (T042). |
-| Esc. 2: producto nuevo aparece en su categoría | Pendiente | | |
-| Esc. 3: fila con nombre o precio vacío no se muestra | Pendiente | | |
-| Esc. 4: sin conexión, con copia guardada: aviso, envío bloqueado, botón de WhatsApp visible | Pendiente | | |
-| Con el catálogo cargado, sin conexión al tocar "Enviar pedido": envío bloqueado con aviso y botón de WhatsApp visible (RF-013) | Pendiente | | |
-| Foto inexistente muestra la imagen genérica | Pendiente | | |
-| Sin copia y hoja inaccesible: mensaje amable con botón de WhatsApp que abre el chat con "Hola, quiero hacer un pedido." | Pendiente | | |
+| Esc. 2: producto nuevo aparece en su categoría | Cumple (paso 2) | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Además, al cambiarle la categoría a "Combos", la categoría nueva se creó sola. |
+| Esc. 3: fila con nombre o precio vacío no se muestra | Cumple (paso 3) | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | La fila sin precio no se muestra. |
+| Esc. 4: sin conexión, con copia guardada: aviso, envío bloqueado, botón de WhatsApp visible | Cumple (paso 7) | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Se ve el aviso "Mostrando datos guardados, pueden estar desactualizados", el envío está desactivado, los botones "Escribir por WhatsApp" y "Reintentar" están visibles y el pedido se conserva. Falta de conexión simulada bloqueando las solicitudes a docs.google.com en las herramientas del navegador. |
+| Con el catálogo cargado, sin conexión al tocar "Enviar pedido": envío bloqueado con aviso y botón de WhatsApp visible (RF-013) | Cumple (paso 8) | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Al tocar "Enviar pedido" sin conexión sale el aviso "No podemos confirmar los precios en este momento…" y el envío queda bloqueado. Falta de conexión simulada bloqueando las solicitudes a docs.google.com en las herramientas del navegador. |
+| Foto inexistente muestra la imagen genérica | Cumple (paso 4) | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Se muestra la imagen genérica. |
+| Sin copia y hoja inaccesible: mensaje amable con botón de WhatsApp que abre el chat con "Hola, quiero hacer un pedido." | Cumple (pasos 5 y 6) | 2026-11-11 / Salvador / Chrome 360 px (Samsung Galaxy A55) | Sin copia y sin conexión: mensaje amable con "Escribir por WhatsApp" y "Reintentar"; el botón de WhatsApp abre el chat con "Hola, quiero hacer un pedido." Falta de conexión simulada bloqueando las solicitudes a docs.google.com en las herramientas del navegador. |
 | CE-004: cambiar un precio con la guía en menos de 1 minuto (tiempo: ___ s) | Pendiente | 2026-11-11 / Salvador (instalador) | El instalador leyó `docs/guia-del-dueno.md` desde el punto de vista de una persona no técnica y la encontró clara y fácil de entender (T043). No se cronometró a una persona que no programa: el CE-004 queda Pendiente, para medirlo con el primer dueño real. |
 
 **Revisión de principios I–VII (Historia 3)**
 
 | Principio | Cumple | Nota |
 |---|---|---|
-| I. Costo cero | Pendiente | |
-| II. Primero el celular | Pendiente | |
-| III. Simplicidad | Pendiente | |
-| IV. El dueño no programa | Pendiente | |
-| V. Privacidad | Pendiente | |
-| VI. Español de Perú | Pendiente | |
-| VII. Entrega por historias | Pendiente | |
+| I. Costo cero | Cumple | |
+| II. Primero el celular | Cumple | |
+| III. Simplicidad | Cumple | |
+| IV. El dueño no programa | Cumple | |
+| V. Privacidad | Cumple | |
+| VI. Español de Perú | Cumple | |
+| VII. Entrega por historias | Cumple | |
 
 ---
 
