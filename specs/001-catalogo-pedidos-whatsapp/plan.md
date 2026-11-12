@@ -80,25 +80,28 @@ specs/001-catalogo-pedidos-whatsapp/
 └── tasks.md             # Fase 2 (lo crea /speckit-tasks, no este comando)
 ```
 
-### Código fuente (raíz del repositorio)
+### Código fuente (carpeta `app/`; solo ella se publica)
 
 ```text
 README.md                # Qué es PedidoFácil, cómo probarlo en local y publicarlo (T053)
-index.html               # Única página: encabezado, catálogo, pedido, formulario
-config.js                # Número de WhatsApp (con 51) y enlaces CSV de la hoja
-css/
-└── estilos.css          # Estilos desde 360 px hacia arriba
-js/
-├── app.js               # Arranque, estados de pantalla y eventos
-├── hoja.js              # Descarga y lectura del CSV; validación de filas
-├── catalogo.js          # Productos, categorías, tarjetas y filtro
-├── pedido.js            # Cantidades, subtotales y total (céntimos)
-├── formulario.js        # Datos del cliente y métodos de pago válidos
-├── mensaje.js           # Texto del pedido y enlace wa.me
-├── almacenamiento.js    # localStorage con respaldo en memoria
-└── formato.js           # Dinero en soles, URL de fotos, textos
-img/
-└── generica.svg         # Imagen genérica para fotos que no cargan
+app/
+├── index.html           # Única página: encabezado, catálogo, pedido, formulario
+├── config.js            # Número de WhatsApp (con 51) y enlaces CSV de la hoja
+├── css/
+│   └── estilos.css      # Estilos desde 360 px hacia arriba
+├── js/
+│   ├── app.js           # Arranque, estados de pantalla y eventos
+│   ├── hoja.js          # Descarga y lectura del CSV; validación de filas
+│   ├── catalogo.js      # Productos, categorías, tarjetas y filtro
+│   ├── pedido.js        # Cantidades, subtotales y total (céntimos)
+│   ├── formulario.js    # Datos del cliente y métodos de pago válidos
+│   ├── mensaje.js       # Texto del pedido y enlace wa.me
+│   ├── almacenamiento.js # localStorage con respaldo en memoria
+│   └── formato.js       # Dinero en soles, URL de fotos, textos
+└── img/
+    └── generica.svg     # Imagen genérica para fotos que no cargan
+.github/workflows/
+└── pages.yml            # Publica solo app/ en GitHub Pages con GitHub Actions
 docs/
 └── guia-del-dueno.md    # Cómo editar la hoja (entregable de la historia 3)
 ```

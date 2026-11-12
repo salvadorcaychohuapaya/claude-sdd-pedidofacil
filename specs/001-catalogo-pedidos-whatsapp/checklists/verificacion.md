@@ -1,5 +1,7 @@
 # Registro de verificación: Catálogo digital con pedidos por WhatsApp
 
+> 2026-11-12: el código se movió a app/; las rutas de este registro son anteriores a ese cambio.
+
 **Propósito**: registro único de resultados de la prueba de concepto, de cada historia de usuario y de los criterios de éxito. La constitución exige registrar el resultado antes de dar por terminada una historia (sección "Flujo de Desarrollo y Puertas de Calidad").
 **Escenarios**: [spec.md](../spec.md) | **Cómo probar**: [quickstart.md](../quickstart.md) | **Tareas**: [tasks.md](../tasks.md)
 

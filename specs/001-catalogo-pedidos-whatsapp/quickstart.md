@@ -9,7 +9,7 @@ Esta guía sirve para comprobar que la funcionalidad cumple los escenarios de ac
 ## Requisitos previos
 
 1. Una hoja de Google Sheets de prueba con las pestañas "Productos" y "Negocio" (columnas en [contracts/hoja-de-calculo.md](contracts/hoja-de-calculo.md)), cada una publicada en la web como CSV.
-2. `config.js` con el número de WhatsApp de prueba (con `51`) y los dos enlaces CSV ([contracts/config.md](contracts/config.md)).
+2. `app/config.js` con el número de WhatsApp de prueba (con `51`) y los dos enlaces CSV ([contracts/config.md](contracts/config.md)).
 3. Datos de prueba mínimos: al menos 3 categorías; un producto agotado; un producto sin foto y otro con foto de Drive; una fila sin precio; un nombre con tildes, ñ y emoji; un nombre con coma; Yape con número y titular completos.
 4. Un navegador con emulación de celular a **360 px** de ancho y, para las pruebas finales, un Android y un iPhone reales.
 
@@ -17,11 +17,11 @@ Esta guía sirve para comprobar que la funcionalidad cumple los escenarios de ac
 
 **Importante: no abrir `index.html` con doble clic.** La página usa módulos de JavaScript (`<script type="module">`) y los navegadores los bloquean cuando el archivo se abre como `file://`; la pantalla quedaría en blanco o sin datos. Siempre hay que servirla por `http://localhost`.
 
-1. Abrir una terminal en la raíz del repositorio (donde está `index.html`).
+1. Abrir una terminal en la raíz del repositorio (el código está en `app/`; ahí está `index.html`).
 2. Iniciar un servidor estático local, con la primera opción que tengas:
-   - Python (Windows): `python -m http.server 5500 --bind 127.0.0.1` (solo esta computadora). En algunas computadoras el comando es `py` en vez de `python`.
-   - Node.js: `npx serve -l 5500`.
-   - Visual Studio Code: extensión "Live Server" → "Go Live" (usa el puerto 5500).
+   - Python (Windows): `python -m http.server 5500 --bind 127.0.0.1 --directory app` (solo esta computadora). En algunas computadoras el comando es `py` en vez de `python`.
+   - Node.js: `npx serve -l 5500 app`.
+   - Visual Studio Code: extensión "Live Server": clic derecho sobre `app/index.html` → "Open with Live Server" (usa el puerto 5500 y la dirección incluye `/app/`).
 3. Abrir `http://localhost:5500` en el navegador. Para detenerlo: `Ctrl + C` en la terminal.
 
 Son herramientas de desarrollo gratuitas y no forman parte del producto: el sitio publicado sigue siendo solo archivos estáticos, sin compilación.
@@ -30,7 +30,7 @@ Son herramientas de desarrollo gratuitas y no forman parte del producto: el siti
 
 **Probar en un celular real** (misma red Wi-Fi que la computadora):
 1. Poner la red de casa como **Privada** en Windows.
-2. Iniciar el servidor escuchando en toda la red: `python -m http.server 5500 --bind 0.0.0.0`.
+2. Iniciar el servidor escuchando en toda la red: `python -m http.server 5500 --bind 0.0.0.0 --directory app`.
 3. Si el Firewall de Windows lo pide, **permitir Python** en redes privadas.
 4. Averiguar la IP de la computadora (`ipconfig`, dirección IPv4) y abrir `http://<IP>:5500` en el celular.
 

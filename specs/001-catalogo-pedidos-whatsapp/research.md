@@ -16,11 +16,11 @@ Las decisiones técnicas de partida están en `docs/decisiones-tecnicas.md` y no
 | **B. Carpeta `img/` del repositorio** | Las fotos se suben al repositorio de GitHub. | URL estable y rápida. | Obliga al dueño a usar Git/GitHub: incumple el principio IV. |
 | **C. Servicio gratuito de alojamiento de imágenes** (por ejemplo ImgBB, Cloudinary) | El dueño crea una cuenta, sube la foto y copia el enlace directo. | Pensado para enlazar imágenes. | Cuenta y condiciones nuevas; los planes gratuitos pueden cambiar o limitar; más pasos para el dueño. |
 
-**Decisión**: **Opción A (Google Drive)**, con una función única `urlFoto()` en `js/formato.js` que:
+**Decisión**: **Opción A (Google Drive)**, con una función única `urlFoto()` en `app/js/formato.js` que:
 
 1. Acepta el enlace que el dueño copia de Drive (`https://drive.google.com/file/d/ID/view?...` o `...open?id=ID`), extrae el `ID` y construye `https://lh3.googleusercontent.com/d/ID=w400` (ancho reducido para conexiones lentas).
 2. Acepta también cualquier otro enlace directo `https://...` tal cual, de modo que el dueño pueda usar la opción C si lo prefiere.
-3. Si la celda está vacía o la imagen falla al cargar, muestra `img/generica.svg` (caso límite de la spec).
+3. Si la celda está vacía o la imagen falla al cargar, muestra `app/img/generica.svg` (caso límite de la spec).
 4. Rechaza como inválido un enlace de carpeta de Drive (`drive.google.com/drive/folders/...`): no contiene el ID de un archivo. Usa la imagen genérica y deja un aviso en la consola.
 5. **Toda imagen que venga de Drive (fotos y logo) lleva `referrerpolicy="no-referrer"`** (comprobado, ver abajo).
 
@@ -57,7 +57,7 @@ Fuentes consultadas (comunidad, no oficiales): [Google Apps Script Community](ht
 
 ## 3. Lectura del CSV sin librerías
 
-**Decisión**: lector propio en `js/hoja.js` que soporta comillas dobles, comas y saltos de línea dentro de una celda, comillas escapadas (`""`), BOM al inicio y saltos de línea `\r\n`. Se lee como UTF-8 (`response.text()`), por lo que tildes, ñ y emojis se conservan.
+**Decisión**: lector propio en `app/js/hoja.js` que soporta comillas dobles, comas y saltos de línea dentro de una celda, comillas escapadas (`""`), BOM al inicio y saltos de línea `\r\n`. Se lee como UTF-8 (`response.text()`), por lo que tildes, ñ y emojis se conservan.
 
 **Alternativas descartadas**: una librería de CSV (rompe el principio III) y `split(",")` (falla con descripciones que contienen comas).
 

@@ -2,10 +2,10 @@
 
 **Plan**: [../plan.md](../plan.md)
 
-`config.js` está en la raíz del sitio y lo edita **quien instala el catálogo**, no el dueño en el día a día. Contiene los únicos datos que no vienen de la hoja.
+`config.js` está en la carpeta `app/` (la raíz del sitio publicado) y lo edita **quien instala el catálogo**, no el dueño en el día a día. Contiene los únicos datos que no vienen de la hoja.
 
 ```text
-// config.js  (módulo de JavaScript)
+// app/config.js  (módulo de JavaScript)
 export const CONFIG = {
   whatsapp: "51987654321",     // solo dígitos, empieza con 51
   hojaProductosCsv: "https://docs.google.com/spreadsheets/d/e/.../pub?gid=...&single=true&output=csv",
