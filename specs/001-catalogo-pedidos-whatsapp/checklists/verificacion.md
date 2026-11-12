@@ -104,7 +104,7 @@
 | Con el catálogo cargado, sin conexión al tocar "Enviar pedido": envío bloqueado con aviso y botón de WhatsApp visible (RF-013) | Pendiente | | |
 | Foto inexistente muestra la imagen genérica | Pendiente | | |
 | Sin copia y hoja inaccesible: mensaje amable con botón de WhatsApp que abre el chat con "Hola, quiero hacer un pedido." | Pendiente | | |
-| CE-004: cambiar un precio con la guía en menos de 1 minuto (tiempo: ___ s) | Pendiente | | |
+| CE-004: cambiar un precio con la guía en menos de 1 minuto (tiempo: ___ s) | Pendiente | 2026-11-11 / Salvador (instalador) | El instalador leyó `docs/guia-del-dueno.md` desde el punto de vista de una persona no técnica y la encontró clara y fácil de entender (T043). No se cronometró a una persona que no programa: el CE-004 queda Pendiente, para medirlo con el primer dueño real. |
 
 **Revisión de principios I–VII (Historia 3)**
 
@@ -151,7 +151,7 @@
 | CE-001 | Pedido de 3 productos en menos de 2 minutos (cliente nuevo) | | Pendiente | |
 | CE-002 | Sin desplazamiento horizontal a 360 px y áreas táctiles de al menos 44×44 px | | Pendiente | |
 | CE-003 | Productos visibles en menos de 3 s con 4G y caché vacía | | Pendiente | |
-| CE-004 | Cambiar un precio sin ayuda en menos de 1 minuto | | Pendiente | |
+| CE-004 | Cambiar un precio sin ayuda en menos de 1 minuto | | Pendiente | Sin cronometrar: la guía fue revisada por el instalador el 2026-11-11; se medirá con el primer dueño real. |
 | CE-005 | Costo mensual de operación: S/ 0 | | Pendiente | |
 | CE-006 | 0 errores de suma en el mensaje de pedido | | Pendiente | |
 
