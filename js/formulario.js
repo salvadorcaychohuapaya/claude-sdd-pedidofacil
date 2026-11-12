@@ -36,13 +36,37 @@ const ETIQUETAS = {
   comentario: "Comentario",
 };
 
+const TEXTOS_PAGO = {
+  yape: (numero, titular) => `Yape al ${numero} a nombre de ${titular}`,
+  plin: (numero, titular) => `Plin al ${numero} a nombre de ${titular}`,
+  captura: "Después de pagar, envía la captura del pago por WhatsApp.",
+};
+
+/** Número y titular de Yape o Plin, o null si falta alguno de los dos. */
+function datosDePago(negocio, metodo) {
+  const datos = metodo === "Yape" ? negocio?.yape : metodo === "Plin" ? negocio?.plin : null;
+  const numero = (datos?.numero ?? "").trim();
+  const titular = (datos?.titular ?? "").trim();
+  return numero !== "" && titular !== "" ? { numero, titular } : null;
+}
+
 /**
- * Métodos de pago que se ofrecen: los marcados en la hoja o, si no hay ninguno,
- * solo "A coordinar por WhatsApp". (Filtrar por datos de Yape/Plin queda para la Historia 4.)
+ * Métodos de pago que se ofrecen (data-model.md): Yape y Plin solo si están marcados y tienen número
+ * y titular; Efectivo y Transferencia si están marcados. Si no queda ninguno, solo "A coordinar por WhatsApp".
  */
 export function metodosDisponibles(negocio) {
-  const metodos = negocio?.metodosPago ?? [];
-  return metodos.length > 0 ? [...metodos] : [METODO_COORDINAR];
+  const validos = (negocio?.metodosPago ?? []).filter(
+    (metodo) => (metodo !== "Yape" && metodo !== "Plin") || datosDePago(negocio, metodo) !== null
+  );
+  return validos.length > 0 ? validos : [METODO_COORDINAR];
+}
+
+/** Texto con los datos de pago del método elegido (vacío si no es Yape ni Plin válidos). */
+export function textoDatosDePago(negocio, metodo) {
+  const datos = datosDePago(negocio, metodo);
+  if (!datos) return "";
+  const texto = metodo === "Yape" ? TEXTOS_PAGO.yape : TEXTOS_PAGO.plin;
+  return texto(datos.numero, datos.titular);
 }
 
 /**
@@ -162,8 +186,21 @@ export function montarFormulario(contenedor, negocio, opciones = {}) {
     ETIQUETAS.metodoPago,
     metodosDisponibles(negocio).map((metodo) => ({ valor: metodo, texto: metodo })),
     cliente.metodoPago,
-    (valor) => actualizarCliente({ metodoPago: valor })
+    (valor) => {
+      actualizarCliente({ metodoPago: valor });
+      mostrarDatosDePago(valor);
+    }
   );
+
+  // Datos de Yape o Plin (número, titular e indicación de la captura) al elegir ese método.
+  const datosPago = crear("div", "datos-pago");
+  datosPago.setAttribute("aria-live", "polite");
+  function mostrarDatosDePago(metodo) {
+    const texto = textoDatosDePago(negocio, metodo);
+    datosPago.hidden = texto === "";
+    datosPago.replaceChildren(...(texto === "" ? [] : [crear("p", "datos-pago-linea", texto), crear("p", "datos-pago-captura", TEXTOS_PAGO.captura)]));
+  }
+  mostrarDatosDePago(cliente.metodoPago);
 
   // Avisos del envío (qué falta, cambios en el pedido) justo encima del botón.
   const avisosEnvio = crear("div", "avisos-envio");
@@ -236,6 +273,7 @@ export function montarFormulario(contenedor, negocio, opciones = {}) {
     modalidad,
     datosDelivery,
     pago,
+    datosPago,
     campo("campo-comentario", ETIQUETAS.comentario, comentario),
     avisosEnvio,
     botonEnviar,
